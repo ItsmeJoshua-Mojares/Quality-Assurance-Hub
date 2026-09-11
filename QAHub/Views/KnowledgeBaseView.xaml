@@ -1,6 +1,215 @@
 <UserControl x:Class="QAHub.Views.KnowledgeBaseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Margin="26">
-    </Grid>
+
+    <UserControl.Resources>
+        <Style x:Key="ArticleCardStyle" TargetType="Border" BasedOn="{StaticResource StatCardStyle}">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#111827"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="26">
+        <Grid>
+
+            <!-- ============ LIST VIEW (front page: just the list + Create button) ============ -->
+            <StackPanel Visibility="{Binding IsListView, Converter={StaticResource BoolToVisConverter}}">
+
+                <Grid Margin="0,0,0,22">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Knowledge Base" FontSize="26" FontWeight="Bold"/>
+                        <TextBlock Text="Known issues, environment setup guides, and team notes"
+                                   Foreground="#6B7280" Margin="0,3,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="0,0,0,0">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Search by title or tags"
+                   Foreground="#6B7280" Margin="0,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+                
+                <Grid Margin="0,0,0,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Padding="8,6"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="Search by title or tags"/>
+                    <Button Grid.Column="2" Content="+ Create Article" Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding ShowCreateFormCommand}"/>
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding ArticlesView}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource ArticleCardStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Cursor="Hand">
+                                        <StackPanel.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                                          Command="{Binding DataContext.OpenArticleCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                          CommandParameter="{Binding}"/>
+                                        </StackPanel.InputBindings>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Title}" FontSize="15" FontWeight="SemiBold"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Category}" FontSize="12"
+                                                       FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                        </Grid>
+                                        <TextBlock FontSize="12" Foreground="#6B7280" Margin="0,3,0,0"
+                                                   Text="{Binding Content}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,4,0,0"
+                                                   Text="{Binding Tags}"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="1" Content="Update" Style="{StaticResource SecondaryButtonStyle}"
+                                            VerticalAlignment="Center" Margin="16,0,0,0"
+                                            Command="{Binding DataContext.EditArticleCommand,
+                                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="No articles yet. Click Create Article to add the first one."
+                           Foreground="#6B7280" Margin="0,10,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TotalArticles}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <TextBlock Text="No articles match your search." Foreground="#6B7280" Margin="0,10,0,0"
+                           Visibility="{Binding HasNoSearchResults, Converter={StaticResource BoolToVisConverter}}"/>
+            </StackPanel>
+
+            <!-- ============ READ-ONLY DETAIL VIEW (opened by clicking a row) ============ -->
+            <StackPanel Visibility="{Binding IsReadOnlyView, Converter={StaticResource BoolToVisConverter}}">
+
+                <Button Content="&#8592; Back to Knowledge Base" Command="{Binding BackToListCommand}"
+                        HorizontalAlignment="Left" Background="Transparent" BorderThickness="0"
+                        Foreground="{StaticResource AccentBrush}" Cursor="Hand" Padding="0"
+                        Margin="0,0,0,18"/>
+
+                <Border Style="{StaticResource StatCardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding SelectedArticle.Title}"
+                                       FontSize="22" FontWeight="Bold" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedArticle.Category}"
+                                       FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top"/>
+                        </Grid>
+
+                        <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,0,0,4"
+                                   Text="{Binding SelectedArticle.Tags, Mode=OneWay}"/>
+
+                        <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,0,0,18">
+                            <Run Text="Last updated "/>
+                            <Run Text="{Binding SelectedArticle.UpdatedAt, Mode=OneWay, StringFormat={}{0:MMM d, yyyy h:mm tt}}"/>
+                        </TextBlock>
+
+                        <TextBlock Text="{Binding SelectedArticle.Content}" TextWrapping="Wrap"
+                                   FontSize="14" LineHeight="22" Margin="0,0,0,20"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Update" Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding EditArticleCommand}"
+                                    CommandParameter="{Binding SelectedArticle}" Margin="0,0,10,0"/>
+                            <Button Content="Delete Article" Style="{StaticResource DangerButtonStyle}"
+                                    Command="{Binding DeleteArticleCommand}"
+                                    CommandParameter="{Binding SelectedArticle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- ============ FORM VIEW (shared: Create new + Update existing) ============ -->
+            <StackPanel Visibility="{Binding IsFormView, Converter={StaticResource BoolToVisConverter}}">
+
+                <TextBlock Text="{Binding FormTitle}" FontSize="22" FontWeight="Bold" Margin="0,0,0,18"/>
+
+                <Border Style="{StaticResource StatCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Title" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox Padding="8,6" Margin="0,0,0,14"
+                                 Text="{Binding DraftTitle, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Category" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox Padding="8,6"
+                                          ItemsSource="{Binding Categories}"
+                                          SelectedItem="{Binding DraftCategory}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Tags (comma-separated)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Padding="8,6"
+                                         Text="{Binding DraftTags, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Content" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox Padding="10,8" MinHeight="200" AcceptsReturn="True" TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto" Margin="0,0,0,18"
+                                 Text="{Binding DraftContent, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="{Binding SaveButtonLabel}" Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding SaveFormCommand}" Margin="0,0,10,0"/>
+                            <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}"
+                                    Command="{Binding CancelFormCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
 </UserControl>
