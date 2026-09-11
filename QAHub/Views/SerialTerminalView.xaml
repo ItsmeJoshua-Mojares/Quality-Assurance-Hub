@@ -1,0 +1,250 @@
+<UserControl x:Class="QAHub.Views.SerialTerminalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:QAHub.Views"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <Style x:Key="SettingsComboStyle" TargetType="ComboBox">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="14,9"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#111827"/>
+        </Style>
+
+        <Style x:Key="DisconnectButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
+        </Style>
+        
+        <views:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="26">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Serial Com Terminal" FontSize="26" FontWeight="Bold"/>
+            <TextBlock Text="Manual test tool for sending and inspecting serial device traffic"
+                       Foreground="#6B7280" Margin="0,3,0,22"/>
+        </StackPanel>
+
+        <!-- Status strip -->
+        <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,-12,18">
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{Binding ConnectionStatusLabel}" FontSize="22" FontWeight="Bold"
+                               Foreground="{Binding ConnectionStatusBrush}"/>
+                    <TextBlock Text="CONNECTION" FontSize="11" Foreground="#6B7280" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{Binding BytesSent}" FontSize="22" FontWeight="Bold"/>
+                    <TextBlock Text="BYTES SENT" FontSize="11" Foreground="#6B7280" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{Binding BytesReceived}" FontSize="22" FontWeight="Bold"
+                               Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Text="BYTES RECEIVED" FontSize="11" Foreground="#6B7280" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{Binding ErrorCount}" FontSize="22" FontWeight="Bold"
+                               Foreground="{StaticResource DangerBrush}"/>
+                    <TextBlock Text="ERRORS" FontSize="11" Foreground="#6B7280" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Main content: settings panel + terminal -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="5*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Connection settings -->
+            <Border Grid.Column="0" Style="{StaticResource StatCardStyle}" Margin="0" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Text="Connection Settings" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,14"/>
+
+                    <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Column="0" Padding="8,6"
+                                  ItemsSource="{Binding AvailablePorts}"
+                                  SelectedItem="{Binding SelectedPort}"
+                                  IsEnabled="{Binding IsNotConnected}"/>
+                        <Button Grid.Column="2" Content="Refresh"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding RefreshPortsCommand}"/>
+                    </Grid>
+
+                    <TextBlock Text="Baud Rate" Style="{StaticResource FieldLabelStyle}"/>
+                    <ComboBox Style="{StaticResource SettingsComboStyle}"
+                              ItemsSource="{Binding BaudRates}"
+                              SelectedItem="{Binding SelectedBaudRate}"
+                              IsEnabled="{Binding IsNotConnected}"/>
+
+                    <TextBlock Text="Parity" Style="{StaticResource FieldLabelStyle}"/>
+                    <ComboBox Style="{StaticResource SettingsComboStyle}"
+                              ItemsSource="{Binding ParityOptions}"
+                              SelectedItem="{Binding SelectedParity}"
+                              IsEnabled="{Binding IsNotConnected}"/>
+
+                    <TextBlock Text="Data Bits" Style="{StaticResource FieldLabelStyle}"/>
+                    <ComboBox Style="{StaticResource SettingsComboStyle}"
+                              ItemsSource="{Binding DataBitsOptions}"
+                              SelectedItem="{Binding SelectedDataBits}"
+                              IsEnabled="{Binding IsNotConnected}"/>
+
+                    <TextBlock Text="Stop Bits" Style="{StaticResource FieldLabelStyle}"/>
+                    <ComboBox Style="{StaticResource SettingsComboStyle}"
+                              ItemsSource="{Binding StopBitsOptions}"
+                              SelectedItem="{Binding SelectedStopBits}"
+                              IsEnabled="{Binding IsNotConnected}"/>
+
+                    <TextBlock Text="Handshake" Style="{StaticResource FieldLabelStyle}"/>
+                    <ComboBox Style="{StaticResource SettingsComboStyle}"
+                              ItemsSource="{Binding HandshakeOptions}"
+                              SelectedItem="{Binding SelectedHandshake}"
+                              IsEnabled="{Binding IsNotConnected}"/>
+
+                    <CheckBox Content="Show hex instead of text"
+                              IsChecked="{Binding ShowAsHex}"
+                              Margin="0,4,0,16"/>
+
+                    <Button Content="Connect"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding ConnectCommand}"
+                            Visibility="{Binding IsNotConnected, Converter={StaticResource BoolToVisConverter}}"
+                            Margin="0,0,0,8"/>
+
+                    <Button Content="Disconnect"
+                            Style="{StaticResource DisconnectButtonStyle}"
+                            Command="{Binding DisconnectCommand}"
+                            Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisConverter}}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Terminal -->
+            <Border Grid.Column="2" Style="{StaticResource StatCardStyle}" Margin="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Terminal Log" FontSize="15" FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Content="Export Log"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ExportLogCommand}"
+                                Margin="0,0,8,0"/>
+                        <Button Grid.Column="2" Content="Clear"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ClearLogCommand}"/>
+                    </Grid>
+
+                    <Border Grid.Row="1" Background="#0F172A" CornerRadius="6" Padding="12">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      x:Name="LogScrollViewer">
+                            <ItemsControl ItemsSource="{Binding LogEntries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                                            <TextBlock Text="{Binding TimestampLabel}"
+                                                       Foreground="#64748B" FontFamily="Consolas"
+                                                       FontSize="12" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding Direction}"
+                                                       FontFamily="Consolas" FontSize="12" FontWeight="Bold"
+                                                       Foreground="{Binding DirectionBrush}"
+                                                       Width="42" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding Message}"
+                                                       Foreground="#E2E8F0" FontFamily="Consolas"
+                                                       FontSize="12" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <Grid Grid.Row="2" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Padding="10,8"
+                                  Text="{Binding OutgoingMessage, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEnabled="{Binding IsConnected}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding SendCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Button Grid.Column="2" Content="Send"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Command="{Binding SendCommand}"
+                                IsEnabled="{Binding IsConnected}"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

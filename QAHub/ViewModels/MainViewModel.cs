@@ -14,10 +14,24 @@ public class MainViewModel : ObservableObject
         Dashboard = new DashboardViewModel(this);
         TestCases = new TestCasesViewModel(_dataService, () => Dashboard.Refresh());
         Bugs = new BugsViewModel(_dataService, () => Dashboard.Refresh());
+        SerialTerminal = new SerialTerminalViewModel();
+        TestRuns = new TestRunsViewModel();
+        Requirements = new RequirementsViewModel();
+        Projects = new ProjectsViewModel();
+        Reports = new ReportsViewModel();
+        KnowledgeBase = new KnowledgeBaseViewModel();
+        Settings = new SettingsViewModel();
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);
+        ShowTestRunsCommand = new RelayCommand(_ => CurrentViewModel = TestRuns);
         ShowBugsCommand = new RelayCommand(_ => CurrentViewModel = Bugs);
+        ShowRequirementsCommand = new RelayCommand(_ => CurrentViewModel = Requirements);
+        ShowProjectsCommand = new RelayCommand(_ => CurrentViewModel = Projects);
+        ShowReportsCommand = new RelayCommand(_ => CurrentViewModel = Reports);
+        ShowKnowledgeBaseCommand = new RelayCommand(_ => CurrentViewModel = KnowledgeBase);
+        ShowSerialTerminalCommand = new RelayCommand(_ => CurrentViewModel = SerialTerminal);
+        ShowSettingsCommand = new RelayCommand(_ => CurrentViewModel = Settings);
 
         CurrentViewModel = Dashboard;
     }
@@ -25,6 +39,13 @@ public class MainViewModel : ObservableObject
     public DashboardViewModel Dashboard { get; }
     public TestCasesViewModel TestCases { get; }
     public BugsViewModel Bugs { get; }
+    public SerialTerminalViewModel SerialTerminal { get; }
+    public TestRunsViewModel TestRuns { get; }
+    public RequirementsViewModel Requirements { get; }
+    public ProjectsViewModel Projects { get; }
+    public ReportsViewModel Reports { get; }
+    public KnowledgeBaseViewModel KnowledgeBase { get; }
+    public SettingsViewModel Settings { get; }
 
     public ObservableObject? CurrentViewModel
     {
@@ -40,5 +61,12 @@ public class MainViewModel : ObservableObject
 
     public RelayCommand ShowDashboardCommand { get; }
     public RelayCommand ShowTestCasesCommand { get; }
+    public RelayCommand ShowTestRunsCommand { get; }
     public RelayCommand ShowBugsCommand { get; }
+    public RelayCommand ShowRequirementsCommand { get; }
+    public RelayCommand ShowProjectsCommand { get; }
+    public RelayCommand ShowReportsCommand { get; }
+    public RelayCommand ShowKnowledgeBaseCommand { get; }
+    public RelayCommand ShowSerialTerminalCommand { get; }
+    public RelayCommand ShowSettingsCommand { get; }
 }
