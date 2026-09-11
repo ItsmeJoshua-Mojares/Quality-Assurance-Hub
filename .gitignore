@@ -1,0 +1,22 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio / Rider / IDE
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## .NET
+*.nupkg
+nupkg/
+
+## OS
+Thumbs.db
+Desktop.ini
+
+## Data output
+*.log
