@@ -20,16 +20,30 @@
                                Foreground="{StaticResource SidebarTextBrush}" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <StackPanel Margin="12,0">
-                    <Button Content="Dashboard" Style="{StaticResource SidebarButtonStyle}"
-                            Command="{Binding ShowDashboardCommand}"/>
-                    <Button Content="Test Cases" Style="{StaticResource SidebarButtonStyle}"
-                            Command="{Binding ShowTestCasesCommand}"/>
-                    <Button Content="Bugs" Style="{StaticResource SidebarButtonStyle}"
-                            Command="{Binding ShowBugsCommand}"/>
-                    <Button Content="Serial Terminal" Style="{StaticResource SidebarButtonStyle}"
-                            Command="{Binding ShowSerialTerminalCommand}"/>
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12,0">
+                        <Button Content="Dashboard" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowDashboardCommand}"/>
+                        <Button Content="Test Cases" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowTestCasesCommand}"/>
+                        <Button Content="Test Runs" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowTestRunsCommand}"/>
+                        <Button Content="Bugs" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowBugsCommand}"/>
+                        <Button Content="Requirements" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowRequirementsCommand}"/>
+                        <Button Content="Projects" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowProjectsCommand}"/>
+                        <Button Content="Reports" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowReportsCommand}"/>
+                        <Button Content="Knowledge Base" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowKnowledgeBaseCommand}"/>
+                        <Button Content="Serial Terminal" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowSerialTerminalCommand}"/>
+                        <Button Content="Settings" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowSettingsCommand}"/>
+                    </StackPanel>
+                </ScrollViewer>
             </DockPanel>
         </Border>
 
