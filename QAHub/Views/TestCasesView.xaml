@@ -1,0 +1,49 @@
+<UserControl x:Class="QAHub.Views.TestCasesView"
+             x:Name="Root"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+            <StackPanel>
+                <TextBlock Text="Test Cases" FontSize="24" FontWeight="Bold"/>
+                <TextBlock Text="Create and manage your automated and manual test cases"
+                           Foreground="#6B7280" FontSize="12" Margin="0,2,0,0"/>
+            </StackPanel>
+            <Button Content="+ Add" Style="{StaticResource PrimaryButtonStyle}"
+                    Command="{Binding AddCommand}" Margin="24,0,0,0" VerticalAlignment="Center"/>
+            <Button Content="Delete" Style="{StaticResource DangerButtonStyle}"
+                    Command="{Binding DeleteCommand}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Items}"
+                  SelectedItem="{Binding Selected}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  SelectionMode="Single"
+                  HeadersVisibility="Column"
+                  RowHeight="32"
+                  GridLinesVisibility="Horizontal"
+                  Background="White"
+                  CellEditEnding="Grid_CellEditEnding">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Width="50" IsReadOnly="True" Binding="{Binding Id}"/>
+                <DataGridTextColumn Header="Title" Width="2*" Binding="{Binding Title}"/>
+                <DataGridTextColumn Header="Description" Width="3*" Binding="{Binding Description}"/>
+                <DataGridTextColumn Header="Area" Width="1*" Binding="{Binding Area}"/>
+                <DataGridComboBoxColumn Header="Priority" Width="1*"
+                                        ItemsSource="{Binding DataContext.Priorities, ElementName=Root}"
+                                        SelectedItemBinding="{Binding Priority}"/>
+                <DataGridComboBoxColumn Header="Status" Width="1*"
+                                        ItemsSource="{Binding DataContext.Statuses, ElementName=Root}"
+                                        SelectedItemBinding="{Binding Status}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
