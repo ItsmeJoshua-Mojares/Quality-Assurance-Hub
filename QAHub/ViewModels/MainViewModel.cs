@@ -14,10 +14,12 @@ public class MainViewModel : ObservableObject
         Dashboard = new DashboardViewModel(this);
         TestCases = new TestCasesViewModel(_dataService, () => Dashboard.Refresh());
         Bugs = new BugsViewModel(_dataService, () => Dashboard.Refresh());
+        SerialTerminal = new SerialTerminalViewModel();
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);
         ShowBugsCommand = new RelayCommand(_ => CurrentViewModel = Bugs);
+        ShowSerialTerminalCommand = new RelayCommand(_ => CurrentViewModel = SerialTerminal);
 
         CurrentViewModel = Dashboard;
     }
@@ -25,6 +27,7 @@ public class MainViewModel : ObservableObject
     public DashboardViewModel Dashboard { get; }
     public TestCasesViewModel TestCases { get; }
     public BugsViewModel Bugs { get; }
+    public SerialTerminalViewModel SerialTerminal { get; }
 
     public ObservableObject? CurrentViewModel
     {
@@ -41,4 +44,5 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowDashboardCommand { get; }
     public RelayCommand ShowTestCasesCommand { get; }
     public RelayCommand ShowBugsCommand { get; }
+    public RelayCommand ShowSerialTerminalCommand { get; }
 }
