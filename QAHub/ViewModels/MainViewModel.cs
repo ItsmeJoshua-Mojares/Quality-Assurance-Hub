@@ -18,9 +18,9 @@ public class MainViewModel : ObservableObject
         TestRuns = new TestRunsViewModel();
         Requirements = new RequirementsViewModel();
         Projects = new ProjectsViewModel();
-        Reports = new ReportsViewModel();
+        Reports = new ReportsViewModel(this);
         KnowledgeBase = new KnowledgeBaseViewModel();
-        Settings = new SettingsViewModel();
+        Settings = new SettingsViewModel(this);
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);
@@ -55,6 +55,7 @@ public class MainViewModel : ObservableObject
             if (SetProperty(ref _currentViewModel, value))
             {
                 Dashboard.Refresh();
+                if (value == Reports) Reports.Refresh();
             }
         }
     }

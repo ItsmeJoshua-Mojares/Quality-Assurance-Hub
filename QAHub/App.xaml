@@ -6,6 +6,8 @@
     <Application.Resources>
 
         <views:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <views:ArchiveLabelConverter x:Key="ArchiveLabelConverter"/>
+        <views:PercentToWidthConverter x:Key="PercentToWidthConverter"/>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
         </DataTemplate>
