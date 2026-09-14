@@ -163,7 +163,7 @@
                 <Grid Margin="0,0,0,18">
                     <TextBox Padding="8,6"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             ToolTip="Search by serial number, model, firmware, or location"/>
+                             ToolTip="Search by serial, model, firmware, master box, IMEI, or location"/>
                 </Grid>
 
                 <ItemsControl ItemsSource="{Binding ShipmentsView}">
@@ -195,15 +195,21 @@
                                         </Grid>
                                         <TextBlock FontSize="12" Foreground="#6B7280" Margin="0,3,0,0"
                                                    Text="{Binding Model, TargetNullValue='No model set'}"/>
-                                        <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,4,0,0">
-                                            <Run Text="{Binding ProjectName, Mode=OneWay}"/>
-                                            <Run Text="•"/>
-                                            <Run Text="FW "/>
-                                            <Run Text="{Binding FirmwareVersion, Mode=OneWay}"/>
-                                            <Run Text="•"/>
-                                            <Run Text="{Binding Location, Mode=OneWay, TargetNullValue='No location'}"/>
-                                        </TextBlock>
-                                    </StackPanel>
+<TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,4,0,0">
+                                        <Run Text="{Binding MasterBox, Mode=OneWay, TargetNullValue='Unpacked'}"/>
+                                        <Run Text="• Board "/>
+                                        <Run Text="{Binding TopEnclosureSn, Mode=OneWay, TargetNullValue='-'}"/>
+                                        <Run Text="• IMEI "/>
+                                        <Run Text="{Binding Imei, Mode=OneWay, TargetNullValue='-'}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0">
+                                        <Run Text="{Binding ProjectName, Mode=OneWay}"/>
+                                        <Run Text=" • FW "/>
+                                        <Run Text="{Binding FirmwareVersion, Mode=OneWay}"/>
+                                        <Run Text=" • "/>
+                                        <Run Text="{Binding Location, Mode=OneWay, TargetNullValue='No location'}"/>
+                                    </TextBlock>
+                                </StackPanel>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                 VerticalAlignment="Center" Margin="16,0,0,0">
@@ -273,6 +279,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -303,6 +310,21 @@
                             <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,14">
                                 <TextBlock Text="LOCATION" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.Location, TargetNullValue='Not set'}"
+                                           FontSize="14" Margin="0,3,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,14">
+                                <TextBlock Text="MASTER BOX" Style="{StaticResource DetailLabelStyle}"/>
+                                <TextBlock Text="{Binding SelectedShipment.MasterBox, TargetNullValue='Not set'}"
+                                           FontSize="14" Margin="0,3,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,0,14">
+                                <TextBlock Text="TOP ENCLOSURE SN" Style="{StaticResource DetailLabelStyle}"/>
+                                <TextBlock Text="{Binding SelectedShipment.TopEnclosureSn, TargetNullValue='Not set'}"
+                                           FontSize="14" Margin="0,3,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,14">
+                                <TextBlock Text="IMEI" Style="{StaticResource DetailLabelStyle}"/>
+                                <TextBlock Text="{Binding SelectedShipment.Imei, TargetNullValue='Not set'}"
                                            FontSize="14" Margin="0,3,0,0"/>
                             </StackPanel>
                         </Grid>
@@ -396,6 +418,37 @@
                         <TextBox Padding="10,8" MinHeight="100" AcceptsReturn="True" TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto" Margin="0,0,0,18"
                                  Text="{Binding DraftRemarks, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Master Box" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Padding="8,6" ToolTip="Packaged bundle serial, e.g. MB260331B0001 (optional)"
+                                         Text="{Binding DraftMasterBox, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Top Enclosure SN" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Padding="8,6" ToolTip="e.g. WE261005B0054 (optional)"
+                                         Text="{Binding DraftTopEnclosureSn, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="IMEI" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Padding="8,6" ToolTip="e.g. 862753067524323 (optional)"
+                                         Text="{Binding DraftImei, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Grid>
 
                         <StackPanel Orientation="Horizontal">
                             <Button Content="{Binding SaveButtonLabel}" Style="{StaticResource PrimaryButtonStyle}"

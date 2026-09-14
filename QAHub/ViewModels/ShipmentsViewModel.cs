@@ -36,6 +36,9 @@ public class ShipmentsViewModel : ObservableObject
     private string _draftFirmwareVersion = string.Empty;
     private string _draftLocation = string.Empty;
     private string _draftRemarks = string.Empty;
+    private string _draftMasterBox = string.Empty;
+    private string _draftTopEnclosureSn = string.Empty;
+    private string _draftImei = string.Empty;
     private Project? _draftProject;
     private ShipmentQaStatus _draftQaStatus = ShipmentQaStatus.Pending;
 
@@ -177,6 +180,24 @@ public class ShipmentsViewModel : ObservableObject
         set => SetProperty(ref _draftRemarks, value);
     }
 
+    public string DraftMasterBox
+    {
+        get => _draftMasterBox;
+        set => SetProperty(ref _draftMasterBox, value);
+    }
+
+    public string DraftTopEnclosureSn
+    {
+        get => _draftTopEnclosureSn;
+        set => SetProperty(ref _draftTopEnclosureSn, value);
+    }
+
+    public string DraftImei
+    {
+        get => _draftImei;
+        set => SetProperty(ref _draftImei, value);
+    }
+
     // ---- Overview stats ----
     public int TotalProjects => _projects.Projects.Count;
     public int SelectedProjectShipmentCount =>
@@ -216,6 +237,8 @@ public class ShipmentsViewModel : ObservableObject
             || shipment.Model.Contains(needle, StringComparison.OrdinalIgnoreCase)
             || shipment.FirmwareVersion.Contains(needle, StringComparison.OrdinalIgnoreCase)
             || (shipment.Location?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (shipment.MasterBox?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (shipment.Imei?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false)
             || shipment.ProjectName.Contains(needle, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -284,6 +307,9 @@ public class ShipmentsViewModel : ObservableObject
         DraftQaStatus = shipment.QaStatus;
         DraftLocation = shipment.Location ?? string.Empty;
         DraftRemarks = shipment.Remarks ?? string.Empty;
+        DraftMasterBox = shipment.MasterBox ?? string.Empty;
+        DraftTopEnclosureSn = shipment.TopEnclosureSn ?? string.Empty;
+        DraftImei = shipment.Imei ?? string.Empty;
         IsEditing = true;
         IsCreatingNew = false;
         RaiseViewStateChanged();
@@ -304,7 +330,10 @@ public class ShipmentsViewModel : ObservableObject
                 FirmwareVersion = DraftFirmwareVersion.Trim(),
                 QaStatus = DraftQaStatus,
                 Location = string.IsNullOrWhiteSpace(DraftLocation) ? null : DraftLocation.Trim(),
-                Remarks = string.IsNullOrWhiteSpace(DraftRemarks) ? null : DraftRemarks.Trim()
+                Remarks = string.IsNullOrWhiteSpace(DraftRemarks) ? null : DraftRemarks.Trim(),
+                MasterBox = string.IsNullOrWhiteSpace(DraftMasterBox) ? null : DraftMasterBox.Trim(),
+                TopEnclosureSn = string.IsNullOrWhiteSpace(DraftTopEnclosureSn) ? null : DraftTopEnclosureSn.Trim(),
+                Imei = string.IsNullOrWhiteSpace(DraftImei) ? null : DraftImei.Trim()
             };
             Shipments.Add(shipment);
         }
@@ -319,6 +348,9 @@ public class ShipmentsViewModel : ObservableObject
             SelectedShipment.QaStatus = DraftQaStatus;
             SelectedShipment.Location = string.IsNullOrWhiteSpace(DraftLocation) ? null : DraftLocation.Trim();
             SelectedShipment.Remarks = string.IsNullOrWhiteSpace(DraftRemarks) ? null : DraftRemarks.Trim();
+            SelectedShipment.MasterBox = string.IsNullOrWhiteSpace(DraftMasterBox) ? null : DraftMasterBox.Trim();
+            SelectedShipment.TopEnclosureSn = string.IsNullOrWhiteSpace(DraftTopEnclosureSn) ? null : DraftTopEnclosureSn.Trim();
+            SelectedShipment.Imei = string.IsNullOrWhiteSpace(DraftImei) ? null : DraftImei.Trim();
         }
 
         _dataService.SaveShipments(Shipments);
@@ -365,6 +397,9 @@ public class ShipmentsViewModel : ObservableObject
         DraftQaStatus = ShipmentQaStatus.Pending;
         DraftLocation = string.Empty;
         DraftRemarks = string.Empty;
+        DraftMasterBox = string.Empty;
+        DraftTopEnclosureSn = string.Empty;
+        DraftImei = string.Empty;
     }
 
     private void RaiseViewStateChanged()
