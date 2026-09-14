@@ -20,3 +20,6 @@ Desktop.ini
 
 ## Data output
 *.log
+
+## Local app data — never commit (repo is public)
+data/
