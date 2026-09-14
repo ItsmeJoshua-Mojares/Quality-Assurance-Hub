@@ -52,19 +52,6 @@ public class JsonDataService : IDataService
         return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
     }
 
-    private static string ResolveDataDirectory()
-    {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-
-        while (dir != null && dir.GetFiles("*.sln").Length == 0)
-        {
-            dir = dir.Parent;
-        }
-
-        var root = dir?.FullName ?? AppContext.BaseDirectory;
-        return Path.Combine(root, "Data");
-    }
-
     public List<TestCase> LoadTestCases()
     {
         if (!File.Exists(_testCasesPath)) return new List<TestCase>();
