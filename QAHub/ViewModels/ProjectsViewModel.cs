@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using QAHub.Models;
@@ -214,6 +215,11 @@ public class ProjectsViewModel : ObservableObject
 
     private void DeleteProject(Project project)
     {
+        if (MessageBox.Show(
+                $"Delete project \"{project.Name}\"? This cannot be undone.",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
         Projects.Remove(project);
         if (SelectedProject == project) SelectedProject = null;
         _dataService.SaveProjects(Projects);

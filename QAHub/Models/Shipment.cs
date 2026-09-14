@@ -29,6 +29,9 @@ public class Shipment : INotifyPropertyChanged
     private ShipmentQaStatus _qaStatus = ShipmentQaStatus.Pending;
     private string? _location;
     private string? _remarks;
+    private string? _masterBox;
+    private string? _topEnclosureSn;
+    private string? _imei;
     private DateTime _updatedAt = DateTime.Now;
 
     public int Id { get; set; }
@@ -83,6 +86,27 @@ public class Shipment : INotifyPropertyChanged
     {
         get => _remarks;
         set { _remarks = value; OnPropertyChanged(); Touch(); }
+    }
+
+    /// <summary>Packaged bundle (Master Box serial) this unit ships in, e.g. "MB260331B0001".</summary>
+    public string? MasterBox
+    {
+        get => _masterBox;
+        set { _masterBox = value; OnPropertyChanged(); Touch(); }
+    }
+
+    /// <summary>Top enclosure serial number, e.g. "WE261005B0054".</summary>
+    public string? TopEnclosureSn
+    {
+        get => _topEnclosureSn;
+        set { _topEnclosureSn = value; OnPropertyChanged(); Touch(); }
+    }
+
+    /// <summary>IMEI of the unit.</summary>
+    public string? Imei
+    {
+        get => _imei;
+        set { _imei = value; OnPropertyChanged(); Touch(); }
     }
 
     public DateTime UpdatedAt
