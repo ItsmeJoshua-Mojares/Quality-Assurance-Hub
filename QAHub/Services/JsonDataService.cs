@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using QAHub.Models;
@@ -14,11 +16,24 @@ public class JsonDataService : IDataService
 
     public JsonDataService(string? dataDirectory = null)
     {
-        _dataDirectory = dataDirectory ?? Path.Combine(AppContext.BaseDirectory, "Data");
+        _dataDirectory = dataDirectory ?? ResolveDataDirectory();
         Directory.CreateDirectory(_dataDirectory);
 
         _testCasesPath = Path.Combine(_dataDirectory, "testcases.json");
         _bugsPath = Path.Combine(_dataDirectory, "bugs.json");
+    }
+
+    private static string ResolveDataDirectory()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (dir != null && dir.GetFiles("*.sln").Length == 0)
+        {
+            dir = dir.Parent;
+        }
+
+        var root = dir?.FullName ?? AppContext.BaseDirectory;
+        return Path.Combine(root, "Data");
     }
 
     public List<TestCase> LoadTestCases()
