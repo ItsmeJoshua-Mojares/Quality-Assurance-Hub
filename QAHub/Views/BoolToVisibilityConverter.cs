@@ -13,7 +13,12 @@ namespace QAHub.Views
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is bool b && b ? Visibility.Visible : Visibility.Collapsed;
+            var flag = value is bool b && b;
+            if (parameter is string s && s.Equals("Invert", StringComparison.OrdinalIgnoreCase))
+            {
+                flag = !flag;
+            }
+            return flag ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
