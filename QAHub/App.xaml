@@ -6,6 +6,7 @@
     <Application.Resources>
 
         <views:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <views:ArchiveLabelConverter x:Key="ArchiveLabelConverter"/>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
         </DataTemplate>
