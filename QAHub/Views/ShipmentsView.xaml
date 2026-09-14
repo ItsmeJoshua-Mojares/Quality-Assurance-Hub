@@ -270,33 +270,37 @@
                         </TextBlock>
 
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Margin="0,0,0,14">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,14">
                                 <TextBlock Text="PROJECT" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.ProjectName}" FontSize="14" Margin="0,3,0,0"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="0,0,0,14">
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,14">
                                 <TextBlock Text="MODEL" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.Model}" FontSize="14" Margin="0,3,0,0"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="2" Margin="0,0,0,14">
+                            <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
                                 <TextBlock Text="FIRMWARE VERSION" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.FirmwareVersion}" FontSize="14" Margin="0,3,0,0"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="0" Margin="0,0,0,14">
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,14">
                                 <TextBlock Text="SHIPMENT DATE" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.ShipmentDate, StringFormat=d}"
                                            FontSize="14" Margin="0,3,0,0"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="0,0,0,14">
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,14">
                                 <TextBlock Text="QA STATUS" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.QaStatus}" FontSize="14" Margin="0,3,0,0"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="2" Margin="0,0,0,14">
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,14">
                                 <TextBlock Text="LOCATION" Style="{StaticResource DetailLabelStyle}"/>
                                 <TextBlock Text="{Binding SelectedShipment.Location, TargetNullValue='Not set'}"
                                            FontSize="14" Margin="0,3,0,0"/>

@@ -24,7 +24,7 @@ public class JsonDataService : IDataService
 
     public JsonDataService(string? dataDirectory = null)
     {
-        _dataDirectory = dataDirectory ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+        _dataDirectory = dataDirectory ?? ResolveDataDirectory();
         Directory.CreateDirectory(_dataDirectory);
 
         _testCasesPath = Path.Combine(_dataDirectory, "testcases.json");
@@ -33,14 +33,28 @@ public class JsonDataService : IDataService
         _shipmentsPath = Path.Combine(_dataDirectory, "shipments.json");
     }
 
+    /// <summary>
+    /// Prefer a solution-level "data" folder so all app data lives next to the
+    /// source in one place. Walks up from the executable until it finds the
+    /// folder containing the solution file, then uses its "data" subfolder.
+    /// Falls back to the executable's own "Data" folder (e.g. published builds).
+    /// </summary>
+    private static string ResolveDataDirectory()
+    {
+        var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+        for (var i = 0; i < 8 && dir != null; i++)
+        {
+            if (dir.GetFiles("*.sln").Length > 0)
+                return Path.Combine(dir.FullName, "data");
+            dir = dir.Parent;
+        }
+
+        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+    }
+
     public List<TestCase> LoadTestCases()
     {
-        if (!File.Exists(_testCasesPath))
-        {
-            var seeds = SampleData.CreateTestCases();
-            SaveTestCases(seeds);
-            return seeds;
-        }
+        if (!File.Exists(_testCasesPath)) return new List<TestCase>();
 
         return JsonSerializer.Deserialize<List<TestCase>>(File.ReadAllText(_testCasesPath), Options)
             ?? new List<TestCase>();
@@ -48,12 +62,7 @@ public class JsonDataService : IDataService
 
     public List<Bug> LoadBugs()
     {
-        if (!File.Exists(_bugsPath))
-        {
-            var seeds = SampleData.CreateBugs();
-            SaveBugs(seeds);
-            return seeds;
-        }
+        if (!File.Exists(_bugsPath)) return new List<Bug>();
 
         return JsonSerializer.Deserialize<List<Bug>>(File.ReadAllText(_bugsPath), Options)
             ?? new List<Bug>();
@@ -69,12 +78,7 @@ public class JsonDataService : IDataService
 
     public List<Shipment> LoadShipments()
     {
-        if (!File.Exists(_shipmentsPath))
-        {
-            var seeds = SampleData.CreateShipments();
-            SaveShipments(seeds);
-            return seeds;
-        }
+        if (!File.Exists(_shipmentsPath)) return new List<Shipment>();
 
         return JsonSerializer.Deserialize<List<Shipment>>(File.ReadAllText(_shipmentsPath), Options)
             ?? new List<Shipment>();

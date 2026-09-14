@@ -1,0 +1,38 @@
+[
+  {
+    "Id": 1,
+    "Title": "Cart total wrong after coupon",
+    "Description": "Discount is not applied to the subtotal.",
+    "Severity": "Major",
+    "Status": "InProgress",
+    "Assignee": "Jordan",
+    "OpenedDate": "2026-09-11T00:00:00+08:00"
+  },
+  {
+    "Id": 2,
+    "Title": "Crash on rapid checkout clicks",
+    "Description": "Double-clicking Pay causes an unhandled exception.",
+    "Severity": "Critical",
+    "Status": "Confirmed",
+    "Assignee": "Priya",
+    "OpenedDate": "2026-09-13T00:00:00+08:00"
+  },
+  {
+    "Id": 3,
+    "Title": "Search ignores accents",
+    "Description": "A query typed without accents returns no matches.",
+    "Severity": "Minor",
+    "Status": "New",
+    "Assignee": "Marcus",
+    "OpenedDate": "2026-09-14T00:00:00+08:00"
+  },
+  {
+    "Id": 4,
+    "Title": "Session timeout message missing",
+    "Description": "The user is silently logged out with no feedback.",
+    "Severity": "Normal",
+    "Status": "Closed",
+    "Assignee": "Jordan",
+    "OpenedDate": "2026-09-08T00:00:00+08:00"
+  }
+]
