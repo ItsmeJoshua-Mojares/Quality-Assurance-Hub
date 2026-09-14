@@ -38,6 +38,9 @@
         <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
             <views:SettingsView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ShipmentsViewModel}">
+            <views:ShipmentsView/>
+        </DataTemplate>
 
         <SolidColorBrush x:Key="SidebarBrush" Color="#1B2430"/>
         <SolidColorBrush x:Key="SidebarActiveBrush" Color="#2F81F7"/>

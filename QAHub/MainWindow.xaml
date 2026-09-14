@@ -42,6 +42,8 @@
                                 Command="{Binding ShowSerialTerminalCommand}"/>
                         <Button Content="Settings" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowSettingsCommand}"/>
+                        <Button Content="Shipment Tracker" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowShipmentsCommand}"/>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>

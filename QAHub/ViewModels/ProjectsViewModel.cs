@@ -5,11 +5,14 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using QAHub.Models;
+using QAHub.Services;
 
 namespace QAHub.ViewModels;
 
 public class ProjectsViewModel : ObservableObject
 {
+    private readonly IDataService _dataService;
+
     private Project? _selectedProject;
     private bool _isEditing;
     private bool _isCreatingNew;
@@ -21,8 +24,13 @@ public class ProjectsViewModel : ObservableObject
     private ProjectStatus _draftStatus = ProjectStatus.Active;
     private string _draftDescription = string.Empty;
 
-    public ProjectsViewModel()
+    public ProjectsViewModel(IDataService dataService)
     {
+        _dataService = dataService;
+
+        foreach (var project in dataService.LoadProjects())
+            Projects.Add(project);
+
         ProjectsView = CollectionViewSource.GetDefaultView(Projects);
         ProjectsView.Filter = FilterProject;
 
@@ -190,6 +198,7 @@ public class ProjectsViewModel : ObservableObject
             SelectedProject.Description = DraftDescription.Trim();
         }
 
+        _dataService.SaveProjects(Projects);
         RaiseOverviewChanged();
         GoToList();
     }
@@ -207,6 +216,7 @@ public class ProjectsViewModel : ObservableObject
     {
         Projects.Remove(project);
         if (SelectedProject == project) SelectedProject = null;
+        _dataService.SaveProjects(Projects);
         RaiseOverviewChanged();
         GoToList();
     }
@@ -214,6 +224,7 @@ public class ProjectsViewModel : ObservableObject
     private void ToggleArchive(Project project)
     {
         project.Status = project.Status == ProjectStatus.Active ? ProjectStatus.Archived : ProjectStatus.Active;
+        _dataService.SaveProjects(Projects);
         RaiseOverviewChanged();
     }
 

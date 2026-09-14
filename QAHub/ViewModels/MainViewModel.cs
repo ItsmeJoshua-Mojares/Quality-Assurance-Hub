@@ -17,10 +17,11 @@ public class MainViewModel : ObservableObject
         SerialTerminal = new SerialTerminalViewModel();
         TestRuns = new TestRunsViewModel();
         Requirements = new RequirementsViewModel();
-        Projects = new ProjectsViewModel();
+        Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
         KnowledgeBase = new KnowledgeBaseViewModel();
         Settings = new SettingsViewModel(this);
+        Shipments = new ShipmentsViewModel(_dataService, Projects);
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);
@@ -32,6 +33,7 @@ public class MainViewModel : ObservableObject
         ShowKnowledgeBaseCommand = new RelayCommand(_ => CurrentViewModel = KnowledgeBase);
         ShowSerialTerminalCommand = new RelayCommand(_ => CurrentViewModel = SerialTerminal);
         ShowSettingsCommand = new RelayCommand(_ => CurrentViewModel = Settings);
+        ShowShipmentsCommand = new RelayCommand(_ => CurrentViewModel = Shipments);
 
         CurrentViewModel = Dashboard;
     }
@@ -46,6 +48,7 @@ public class MainViewModel : ObservableObject
     public ReportsViewModel Reports { get; }
     public KnowledgeBaseViewModel KnowledgeBase { get; }
     public SettingsViewModel Settings { get; }
+    public ShipmentsViewModel Shipments { get; }
 
     public ObservableObject? CurrentViewModel
     {
@@ -70,4 +73,5 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowKnowledgeBaseCommand { get; }
     public RelayCommand ShowSerialTerminalCommand { get; }
     public RelayCommand ShowSettingsCommand { get; }
+    public RelayCommand ShowShipmentsCommand { get; }
 }

@@ -1,7 +1,14 @@
+using System;
+using System.Collections.Generic;
 using QAHub.Models;
 
 namespace QAHub.Services;
 
+/// <summary>Seeded reference data shown the first time the app runs
+/// (and any time a data file is missing). Keeps sample content for
+/// test cases, bugs, and shipments separate from the JSON persistence
+/// layer. Projects intentionally start empty and only persist the
+/// projects the user creates.</summary>
 public static class SampleData
 {
     public static List<TestCase> CreateTestCases() => new()
@@ -63,19 +70,19 @@ public static class SampleData
         new TestCase
         {
             Id = 7,
-            Title = "Dark mode toggle",
-            Description = "Verify the theme switch applies instantly and persists.",
-            Area = "Settings",
-            Priority = Priority.Low,
+            Title = "Search with empty input",
+            Description = "Verify an empty search shows all results without error.",
+            Area = "Search",
+            Priority = Priority.Medium,
             Status = TestStatus.Ready
         },
         new TestCase
         {
             Id = 8,
-            Title = "Payment with card",
-            Description = "Verify a card payment succeeds; blocked by sandbox outage.",
-            Area = "Billing",
-            Priority = Priority.Critical,
+            Title = "Checkout validation - required fields",
+            Description = "Verify required fields are validated on the checkout screen.",
+            Area = "Checkout",
+            Priority = Priority.High,
             Status = TestStatus.Blocked
         }
     };
@@ -121,6 +128,46 @@ public static class SampleData
             Status = BugStatus.Closed,
             Assignee = "Jordan",
             OpenedDate = DateTime.Today.AddDays(-6)
+        }
+    };
+
+    public static List<Shipment> CreateShipments() => new()
+    {
+        new Shipment
+        {
+            Id = 1,
+            ProjectId = 1,
+            ProjectName = "Atlas IoT Gateway",
+            ShipmentDate = DateTime.Today.AddDays(-12),
+            SerialNumber = "GW-200-0001",
+            Model = "GW-200",
+            FirmwareVersion = "1.4.0",
+            QaStatus = ShipmentQaStatus.Ready,
+            Location = "Warehouse A"
+        },
+        new Shipment
+        {
+            Id = 2,
+            ProjectId = 2,
+            ProjectName = "Aurora Sensor Hub",
+            ShipmentDate = DateTime.Today.AddDays(-4),
+            SerialNumber = "SH-50-0012",
+            Model = "SH-50",
+            FirmwareVersion = "0.9.1",
+            QaStatus = ShipmentQaStatus.Passed,
+            Location = "In transit to Cebu"
+        },
+        new Shipment
+        {
+            Id = 3,
+            ProjectId = 1,
+            ProjectName = "Atlas IoT Gateway",
+            ShipmentDate = DateTime.Today.AddDays(-1),
+            SerialNumber = "GW-200-0002",
+            Model = "GW-200",
+            FirmwareVersion = "1.5.0",
+            QaStatus = ShipmentQaStatus.InProgress,
+            Location = "QA bench"
         }
     };
 }
