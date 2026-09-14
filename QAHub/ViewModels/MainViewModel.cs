@@ -20,7 +20,7 @@ public class MainViewModel : ObservableObject
         Projects = new ProjectsViewModel();
         Reports = new ReportsViewModel(this);
         KnowledgeBase = new KnowledgeBaseViewModel();
-        Settings = new SettingsViewModel();
+        Settings = new SettingsViewModel(this);
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);

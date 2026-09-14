@@ -1,6 +1,106 @@
 <UserControl x:Class="QAHub.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Margin="26">
-    </Grid>
+
+    <UserControl.Resources>
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#111827"/>
+        </Style>
+
+        <Style x:Key="ResetRowStyle" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="26">
+        <StackPanel MaxWidth="720">
+
+            <TextBlock Text="Settings" FontSize="26" FontWeight="Bold"/>
+            <TextBlock Text="App status and data management"
+                       Foreground="#6B7280" Margin="0,3,0,22"/>
+
+            <!-- About / status -->
+            <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="About" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <TextBlock FontSize="13" Margin="0,0,0,4">
+                        <Run Text="QA Hub" FontWeight="SemiBold"/>
+                        <Run Text=" — Quality &amp; Testing Center"/>
+                    </TextBlock>
+                    <TextBlock FontSize="12" Foreground="#6B7280" TextWrapping="Wrap" LineHeight="20">
+                        All data (Test Runs, Requirements, Projects, Knowledge Base) is currently held
+                        in memory for this session only and is not saved between launches. A SQLite-backed
+                        data layer is planned but not yet wired up — once that's in place this page is
+                        where storage location and backup options will live.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Data management -->
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Data Management" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="Clear data for a single section, or everything at once. Each asks for confirmation first."
+                               FontSize="12" Foreground="#6B7280" Margin="0,0,0,16"/>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Test Runs" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetTestRunsCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Requirements" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetRequirementsCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Projects" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetProjectsCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Knowledge Base" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetKnowledgeBaseCommand}"/>
+                    </Grid>
+
+                    <Separator Margin="0,4,0,16" Background="#E5E7EB"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Reset Everything" FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock Text="Clears all four sections above in one action." FontSize="11" Foreground="#6B7280"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Reset All Data" Style="{StaticResource DangerButtonStyle}"
+                                Command="{Binding ResetAllCommand}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
