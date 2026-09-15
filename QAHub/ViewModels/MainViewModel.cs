@@ -15,11 +15,11 @@ public class MainViewModel : ObservableObject
         TestCases = new TestCasesViewModel(_dataService, () => Dashboard.Refresh());
         Bugs = new BugsViewModel(_dataService, () => Dashboard.Refresh());
         SerialTerminal = new SerialTerminalViewModel();
-        TestRuns = new TestRunsViewModel();
-        Requirements = new RequirementsViewModel();
+        TestRuns = new TestRunsViewModel(_dataService);
+        Requirements = new RequirementsViewModel(_dataService);
         Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
-        KnowledgeBase = new KnowledgeBaseViewModel();
+        KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
         Settings = new SettingsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
 

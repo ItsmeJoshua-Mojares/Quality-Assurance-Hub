@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace QAHub.Models;
 
@@ -109,6 +110,7 @@ public class Shipment : INotifyPropertyChanged
         set { _imei = value; OnPropertyChanged(); Touch(); }
     }
 
+    [JsonInclude]
     public DateTime UpdatedAt
     {
         get => _updatedAt;
