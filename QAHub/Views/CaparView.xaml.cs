@@ -7,11 +7,11 @@ using QAHub.ViewModels;
 
 namespace QAHub.Views;
 
-public partial class ShipmentsView : UserControl
+public partial class CaparView : UserControl
 {
     private INotifyPropertyChanged? _vm;
 
-    public ShipmentsView()
+    public CaparView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
@@ -30,15 +30,15 @@ public partial class ShipmentsView : UserControl
     {
         switch (e.PropertyName)
         {
-            case nameof(ShipmentsViewModel.IsProjectsView):
-            case nameof(ShipmentsViewModel.IsProjectShipmentsView):
-            case nameof(ShipmentsViewModel.IsReadOnlyView):
-            case nameof(ShipmentsViewModel.IsFormView):
+            case nameof(CaparViewModel.IsProjectsView):
+            case nameof(CaparViewModel.IsProjectItemsView):
+            case nameof(CaparViewModel.IsReadOnlyView):
+            case nameof(CaparViewModel.IsFormView):
                 Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(PageScroller.ScrollToTop));
-                if (e.PropertyName == nameof(ShipmentsViewModel.IsProjectShipmentsView) && _vm is ShipmentsViewModel svm && svm.IsProjectShipmentsView)
+                if (e.PropertyName == nameof(CaparViewModel.IsProjectItemsView) && _vm is CaparViewModel cvm && cvm.IsProjectItemsView)
                     Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, new Action(() =>
                     {
-                        var items = svm.Shipments;
+                        var items = cvm.Items;
                         var copy = items.ToList();
                         items.Clear();
                         foreach (var item in copy) items.Add(item);

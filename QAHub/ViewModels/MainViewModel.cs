@@ -1,3 +1,4 @@
+using System.Linq;
 using QAHub.Services;
 
 namespace QAHub.ViewModels;
@@ -22,6 +23,8 @@ public class MainViewModel : ObservableObject
         KnowledgeBase = new KnowledgeBaseViewModel();
         Settings = new SettingsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
+        Rmas = new RmaViewModel(_dataService, Projects);
+        Capars = new CaparViewModel(_dataService, Projects);
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);
@@ -34,6 +37,18 @@ public class MainViewModel : ObservableObject
         ShowSerialTerminalCommand = new RelayCommand(_ => CurrentViewModel = SerialTerminal);
         ShowSettingsCommand = new RelayCommand(_ => CurrentViewModel = Settings);
         ShowShipmentsCommand = new RelayCommand(_ => CurrentViewModel = Shipments);
+        ShowRmasCommand = new RelayCommand(_ =>
+        {
+            Rmas.RefreshProjects(Projects.Projects.Select(p => p.Name));
+            Rmas.Refresh();
+            CurrentViewModel = Rmas;
+        });
+        ShowCaparsCommand = new RelayCommand(_ =>
+        {
+            Capars.RefreshProjects(Projects.Projects.Select(p => p.Name));
+            Capars.Refresh();
+            CurrentViewModel = Capars;
+        });
 
         CurrentViewModel = Dashboard;
     }
@@ -49,6 +64,8 @@ public class MainViewModel : ObservableObject
     public KnowledgeBaseViewModel KnowledgeBase { get; }
     public SettingsViewModel Settings { get; }
     public ShipmentsViewModel Shipments { get; }
+    public RmaViewModel Rmas { get; }
+    public CaparViewModel Capars { get; }
 
     public ObservableObject? CurrentViewModel
     {
@@ -74,4 +91,6 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowSerialTerminalCommand { get; }
     public RelayCommand ShowSettingsCommand { get; }
     public RelayCommand ShowShipmentsCommand { get; }
+    public RelayCommand ShowRmasCommand { get; }
+    public RelayCommand ShowCaparsCommand { get; }
 }

@@ -21,6 +21,8 @@ public class JsonDataService : IDataService
     private readonly string _bugsPath;
     private readonly string _projectsPath;
     private readonly string _shipmentsPath;
+    private readonly string _rmAsPath;
+    private readonly string _caparsPath;
 
     public JsonDataService(string? dataDirectory = null)
     {
@@ -31,6 +33,8 @@ public class JsonDataService : IDataService
         _bugsPath = Path.Combine(_dataDirectory, "bugs.json");
         _projectsPath = Path.Combine(_dataDirectory, "projects.json");
         _shipmentsPath = Path.Combine(_dataDirectory, "shipments.json");
+        _rmAsPath = Path.Combine(_dataDirectory, "rma.json");
+        _caparsPath = Path.Combine(_dataDirectory, "capar.json");
     }
 
     /// <summary>
@@ -95,4 +99,26 @@ public class JsonDataService : IDataService
 
     public void SaveShipments(IEnumerable<Shipment> shipments)
         => File.WriteAllText(_shipmentsPath, JsonSerializer.Serialize(shipments, Options));
+
+    public List<Rma> LoadRmAs()
+    {
+        if (!File.Exists(_rmAsPath)) return new List<Rma>();
+
+        return JsonSerializer.Deserialize<List<Rma>>(File.ReadAllText(_rmAsPath), Options)
+            ?? new List<Rma>();
+    }
+
+    public List<Capar> LoadCapars()
+    {
+        if (!File.Exists(_caparsPath)) return new List<Capar>();
+
+        return JsonSerializer.Deserialize<List<Capar>>(File.ReadAllText(_caparsPath), Options)
+            ?? new List<Capar>();
+    }
+
+    public void SaveRmAs(IEnumerable<Rma> rmAs)
+        => File.WriteAllText(_rmAsPath, JsonSerializer.Serialize(rmAs, Options));
+
+    public void SaveCapars(IEnumerable<Capar> capars)
+        => File.WriteAllText(_caparsPath, JsonSerializer.Serialize(capars, Options));
 }
