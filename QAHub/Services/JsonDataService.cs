@@ -21,6 +21,9 @@ public class JsonDataService : IDataService
     private readonly string _bugsPath;
     private readonly string _projectsPath;
     private readonly string _shipmentsPath;
+    private readonly string _testRunsPath;
+    private readonly string _requirementsPath;
+    private readonly string _knowledgeBasePath;
     private readonly string _rmAsPath;
     private readonly string _caparsPath;
 
@@ -33,6 +36,9 @@ public class JsonDataService : IDataService
         _bugsPath = Path.Combine(_dataDirectory, "bugs.json");
         _projectsPath = Path.Combine(_dataDirectory, "projects.json");
         _shipmentsPath = Path.Combine(_dataDirectory, "shipments.json");
+        _testRunsPath = Path.Combine(_dataDirectory, "testruns.json");
+        _requirementsPath = Path.Combine(_dataDirectory, "requirements.json");
+        _knowledgeBasePath = Path.Combine(_dataDirectory, "knowledgebase.json");
         _rmAsPath = Path.Combine(_dataDirectory, "rma.json");
         _caparsPath = Path.Combine(_dataDirectory, "capar.json");
     }
@@ -88,6 +94,30 @@ public class JsonDataService : IDataService
             ?? new List<Shipment>();
     }
 
+    public List<TestRun> LoadTestRuns()
+    {
+        if (!File.Exists(_testRunsPath)) return new List<TestRun>();
+
+        return JsonSerializer.Deserialize<List<TestRun>>(File.ReadAllText(_testRunsPath), Options)
+            ?? new List<TestRun>();
+    }
+
+    public List<Requirement> LoadRequirements()
+    {
+        if (!File.Exists(_requirementsPath)) return new List<Requirement>();
+
+        return JsonSerializer.Deserialize<List<Requirement>>(File.ReadAllText(_requirementsPath), Options)
+            ?? new List<Requirement>();
+    }
+
+    public List<KnowledgeArticle> LoadKnowledgeArticles()
+    {
+        if (!File.Exists(_knowledgeBasePath)) return new List<KnowledgeArticle>();
+
+        return JsonSerializer.Deserialize<List<KnowledgeArticle>>(File.ReadAllText(_knowledgeBasePath), Options)
+            ?? new List<KnowledgeArticle>();
+    }
+
     public void SaveTestCases(IEnumerable<TestCase> testCases)
         => File.WriteAllText(_testCasesPath, JsonSerializer.Serialize(testCases, Options));
 
@@ -100,6 +130,15 @@ public class JsonDataService : IDataService
     public void SaveShipments(IEnumerable<Shipment> shipments)
         => File.WriteAllText(_shipmentsPath, JsonSerializer.Serialize(shipments, Options));
 
+    public void SaveTestRuns(IEnumerable<TestRun> testRuns)
+        => File.WriteAllText(_testRunsPath, JsonSerializer.Serialize(testRuns, Options));
+
+    public void SaveRequirements(IEnumerable<Requirement> requirements)
+        => File.WriteAllText(_requirementsPath, JsonSerializer.Serialize(requirements, Options));
+
+    public void SaveKnowledgeArticles(IEnumerable<KnowledgeArticle> articles)
+        => File.WriteAllText(_knowledgeBasePath, JsonSerializer.Serialize(articles, Options));
+}
     public List<Rma> LoadRmAs()
     {
         if (!File.Exists(_rmAsPath)) return new List<Rma>();

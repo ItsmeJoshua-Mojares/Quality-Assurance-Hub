@@ -147,13 +147,60 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Defect Severity (placeholder — needs Bug.Severity confirmed) -->
+                <!-- Defect Severity (real data from Bug.Severity) -->
                 <Border Grid.Column="2" Style="{StaticResource StatCardStyle}" Margin="0">
                     <StackPanel>
-                        <TextBlock Text="Defect Severity" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                        <TextBlock Text="Coming soon" FontSize="13" FontWeight="SemiBold" Foreground="#9CA3AF" Margin="0,20,0,6"/>
-                        <TextBlock Text="Needs a Severity field on the Bug model before this can show real data."
-                                   FontSize="11" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                        <TextBlock Text="Defect Severity" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,14"/>
+
+                        <Grid Visibility="{Binding HasDefectsForSeverityChart, Converter={StaticResource BoolToVisConverter}}">
+                            <Canvas Width="130" Height="130" HorizontalAlignment="Center">
+                                <ItemsControl ItemsSource="{Binding DefectSeveritySlices}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Path Data="{Binding Geometry}" Fill="{Binding Fill}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock Text="{Binding SeverityChartTotal}" FontSize="26" FontWeight="Bold"
+                                           Canvas.Left="0" Canvas.Top="48" Width="130" TextAlignment="Center"/>
+                                <TextBlock Text="Open Defects" FontSize="10" Foreground="#9CA3AF"
+                                           Canvas.Left="0" Canvas.Top="76" Width="130" TextAlignment="Center"/>
+                            </Canvas>
+
+                            <ItemsControl ItemsSource="{Binding DefectSeveritySlices}" Margin="0,16,0,0"
+                                          VerticalAlignment="Bottom">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="10"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{Binding Fill}"
+                                                     VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="12"
+                                                       Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Count}" FontSize="12"
+                                                       FontWeight="SemiBold" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding PercentLabel}" FontSize="11"
+                                                       Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+
+                        <TextBlock Text="No open defects — the chart will fill in once there are some."
+                                   FontSize="12" Foreground="#9CA3AF" TextWrapping="Wrap" Margin="0,20,0,0"
+                                   Visibility="{Binding HasDefectsForSeverityChart, Converter={StaticResource BoolToVisConverter}, ConverterParameter=Invert}"/>
                     </StackPanel>
                 </Border>
 

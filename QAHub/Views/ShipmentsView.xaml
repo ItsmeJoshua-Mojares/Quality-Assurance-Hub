@@ -217,11 +217,12 @@
                                         <Run Text=" • FW "/>
                                         <Run Text="{Binding FirmwareVersion, Mode=OneWay}"/>
                                         <Run Text=" • "/>
-<Run Text="{Binding Location, Mode=OneWay, TargetNullValue='No location'}"/>
+                                        <Run Text="{Binding Location, Mode=OneWay, TargetNullValue='No location'}"/>
                                     </TextBlock>
                                 </StackPanel>
-                                </Button>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                                VerticalAlignment="Center" Margin="16,0,0,0">
                                         <Button Content="Update" Style="{StaticResource SecondaryButtonStyle}"
                                                 Margin="0,0,8,0"
                                                 Command="{Binding DataContext.EditShipmentCommand,

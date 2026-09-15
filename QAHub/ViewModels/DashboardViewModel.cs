@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using QAHub.Models;
@@ -24,12 +25,23 @@ public class RecentRunRow
     public DateTime CreatedAt { get; set; }
 }
 
-/// <summary>A row for the Recent Defects table. Severity is a placeholder until the Bug model's field is confirmed.</summary>
+/// <summary>A row for the Recent Defects table.</summary>
 public class RecentDefectRow
 {
     public string Title { get; set; } = string.Empty;
     public BugStatus Status { get; set; }
     public DateTime OpenedDate { get; set; }
+}
+
+/// <summary>One wedge of the homemade Defect Severity donut chart, with its geometry pre-computed.</summary>
+public class SeverityDonutSlice
+{
+    public Severity Severity { get; set; }
+    public string Label { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public string PercentLabel { get; set; } = string.Empty;
+    public Brush Fill { get; set; } = Brushes.Gray;
+    public Geometry? Geometry { get; set; }
 }
 
 public class DashboardViewModel : ObservableObject
@@ -68,6 +80,11 @@ public class DashboardViewModel : ObservableObject
     // ---- Recent tables ----
     public ObservableCollection<RecentRunRow> RecentRuns { get; } = new();
     public ObservableCollection<RecentDefectRow> RecentDefects { get; } = new();
+
+    // ---- Defect Severity donut (real data, built from Bug.Severity across open defects) ----
+    public ObservableCollection<SeverityDonutSlice> DefectSeveritySlices { get; } = new();
+    public int SeverityChartTotal { get; private set; }
+    public bool HasDefectsForSeverityChart { get; private set; }
 
     // ---- Execution trend chart (real data, built from TestRunItem.ExecutedAt across all runs) ----
     public PointCollection PassedTrendPoints { get; private set; } = new();
@@ -129,6 +146,7 @@ public class DashboardViewModel : ObservableObject
         }
 
         BuildExecutionTrend(runs);
+        BuildDefectSeverityChart(bugs);
 
         OnPropertyChanged(nameof(TotalTestCases));
         OnPropertyChanged(nameof(PassedCases));
@@ -144,6 +162,8 @@ public class DashboardViewModel : ObservableObject
         OnPropertyChanged(nameof(FailedTrendPoints));
         OnPropertyChanged(nameof(BlockedTrendPoints));
         OnPropertyChanged(nameof(HasTrendData));
+        OnPropertyChanged(nameof(SeverityChartTotal));
+        OnPropertyChanged(nameof(HasDefectsForSeverityChart));
     }
 
     /// <summary>
@@ -195,8 +215,116 @@ public class DashboardViewModel : ObservableObject
         {
             var x = count == 1 ? 0 : ChartWidth * i / (count - 1);
             var y = ChartHeight - (values[i] / (double)maxValue * ChartHeight);
-            points.Add(new System.Windows.Point(x, y));
+            points.Add(new Point(x, y));
         }
         return points;
+    }
+
+    // Donut chart geometry constants (matches the Canvas size in DashboardView.xaml)
+    private const double DonutCenter = 65;
+    private const double DonutOuterRadius = 60;
+    private const double DonutInnerRadius = 36;
+
+    /// <summary>
+    /// Builds the Defect Severity donut from real Bug.Severity values across
+    /// open (non-Closed) defects — matching the same "open" filter used by
+    /// the Open Defects stat card, so the two numbers stay consistent.
+    /// </summary>
+    private void BuildDefectSeverityChart(IEnumerable<Bug> bugs)
+    {
+        var openBugs = bugs.Where(b => b.Status != BugStatus.Closed).ToList();
+        var total = openBugs.Count;
+
+        SeverityChartTotal = total;
+        HasDefectsForSeverityChart = total > 0;
+
+        DefectSeveritySlices.Clear();
+        if (total == 0) return;
+
+        // Ordered least-severe to most-severe for a calm-to-alarming color ramp.
+        var order = new[]
+        {
+            (Severity.Minor, "Minor", new SolidColorBrush(Color.FromRgb(0x22, 0xC5, 0x5E))),
+            (Severity.Normal, "Normal", new SolidColorBrush(Color.FromRgb(0x2F, 0x81, 0xF7))),
+            (Severity.Major, "Major", new SolidColorBrush(Color.FromRgb(0xD9, 0x77, 0x06))),
+            (Severity.Critical, "Critical", new SolidColorBrush(Color.FromRgb(0xE2, 0x4C, 0x4C))),
+        };
+
+        double startAngle = 0;
+        foreach (var (severity, label, brush) in order)
+        {
+            var count = openBugs.Count(b => b.Severity == severity);
+            var percent = count * 100.0 / total;
+            var sweep = count * 360.0 / total;
+            var endAngle = startAngle + sweep;
+
+            DefectSeveritySlices.Add(new SeverityDonutSlice
+            {
+                Severity = severity,
+                Label = label,
+                Count = count,
+                PercentLabel = $"{Math.Round(percent)}%",
+                Fill = brush,
+                Geometry = count > 0
+                    ? (count == total ? BuildFullDonutGeometry() : BuildDonutSliceGeometry(startAngle, endAngle))
+                    : null
+            });
+
+            startAngle = endAngle;
+        }
+    }
+
+    /// <summary>A full ring — used when one severity accounts for 100% of open defects,
+    /// where a single 360° ArcSegment would be degenerate (start and end points coincide).</summary>
+    private static Geometry BuildFullDonutGeometry()
+    {
+        var outerTop = PointOnCircle(DonutOuterRadius, 0);
+        var outerBottom = PointOnCircle(DonutOuterRadius, 180);
+        var innerTop = PointOnCircle(DonutInnerRadius, 0);
+        var innerBottom = PointOnCircle(DonutInnerRadius, 180);
+
+        var figure = new PathFigure { StartPoint = outerTop, IsClosed = true };
+        figure.Segments.Add(new ArcSegment(outerBottom, new Size(DonutOuterRadius, DonutOuterRadius), 0, false, SweepDirection.Clockwise, true));
+        figure.Segments.Add(new ArcSegment(outerTop, new Size(DonutOuterRadius, DonutOuterRadius), 0, false, SweepDirection.Clockwise, true));
+        figure.Segments.Add(new LineSegment(innerTop, true));
+        figure.Segments.Add(new ArcSegment(innerBottom, new Size(DonutInnerRadius, DonutInnerRadius), 0, false, SweepDirection.Counterclockwise, true));
+        figure.Segments.Add(new ArcSegment(innerTop, new Size(DonutInnerRadius, DonutInnerRadius), 0, false, SweepDirection.Counterclockwise, true));
+
+        var geometry = new PathGeometry();
+        geometry.Figures.Add(figure);
+        geometry.Freeze();
+        return geometry;
+    }
+
+    private static Geometry BuildDonutSliceGeometry(double startAngleDeg, double endAngleDeg)
+    {
+        var sweep = endAngleDeg - startAngleDeg;
+        var isLargeArc = sweep > 180;
+
+        var outerStart = PointOnCircle(DonutOuterRadius, startAngleDeg);
+        var outerEnd = PointOnCircle(DonutOuterRadius, endAngleDeg);
+        var innerStart = PointOnCircle(DonutInnerRadius, startAngleDeg);
+        var innerEnd = PointOnCircle(DonutInnerRadius, endAngleDeg);
+
+        var figure = new PathFigure { StartPoint = outerStart, IsClosed = true };
+        figure.Segments.Add(new ArcSegment(outerEnd, new Size(DonutOuterRadius, DonutOuterRadius),
+            0, isLargeArc, SweepDirection.Clockwise, true));
+        figure.Segments.Add(new LineSegment(innerEnd, true));
+        figure.Segments.Add(new ArcSegment(innerStart, new Size(DonutInnerRadius, DonutInnerRadius),
+            0, isLargeArc, SweepDirection.Counterclockwise, true));
+
+        var geometry = new PathGeometry();
+        geometry.Figures.Add(figure);
+        geometry.Freeze();
+        return geometry;
+    }
+
+    /// <summary>Point on a circle of the given radius, centered on the donut, at a clock-style angle (0° = top, clockwise).</summary>
+    private static Point PointOnCircle(double radius, double angleDegrees)
+    {
+        var radians = angleDegrees * Math.PI / 180.0;
+        return new Point(
+            DonutCenter + radius * Math.Sin(radians),
+            DonutCenter - radius * Math.Cos(radians));
     }
 }

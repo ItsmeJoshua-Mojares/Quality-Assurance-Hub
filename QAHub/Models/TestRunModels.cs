@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace QAHub.Models;
 
@@ -32,10 +33,11 @@ public class TestRun : INotifyPropertyChanged
 {
     private TestRunStatus _status = TestRunStatus.Planned;
     private DateTime? _completedAt;
+    private ObservableCollection<TestRunItem> _items = new();
 
     public TestRun()
     {
-        Items.CollectionChanged += OnItemsCollectionChanged;
+        _items.CollectionChanged += OnItemsCollectionChanged;
     }
 
     public int Id { get; set; }
@@ -56,7 +58,31 @@ public class TestRun : INotifyPropertyChanged
         set { _completedAt = value; OnPropertyChanged(); }
     }
 
-    public ObservableCollection<TestRunItem> Items { get; } = new();
+    /// <summary>
+    /// Has a real setter (rather than a get-only auto-property) so JSON
+    /// deserialization reliably populates it — read-only collection
+    /// population support in System.Text.Json isn't consistent enough to
+    /// rely on here. The setter re-wires CollectionChanged/PropertyChanged
+    /// subscriptions onto whatever instance ends up assigned, so rollup
+    /// stats keep working correctly after a JSON load replaces the collection.
+    /// </summary>
+    public ObservableCollection<TestRunItem> Items
+    {
+        get => _items;
+        set
+        {
+            _items.CollectionChanged -= OnItemsCollectionChanged;
+            foreach (var item in _items)
+                item.PropertyChanged -= OnItemPropertyChanged;
+
+            _items = value ?? new ObservableCollection<TestRunItem>();
+            _items.CollectionChanged += OnItemsCollectionChanged;
+            foreach (var item in _items)
+                item.PropertyChanged += OnItemPropertyChanged;
+
+            RaiseRollupsChanged();
+        }
+    }
 
     // Roll-ups for the UI (stat cards, progress bar). Computed, not stored,
     // and re-raised whenever an item is added/removed or changes status.
@@ -158,6 +184,8 @@ public class TestRunItem : INotifyPropertyChanged
     }
 
     public string? ExecutedBy { get; set; }
+
+    [JsonInclude]
     public DateTime? ExecutedAt { get; private set; }
 
     /// <summary>

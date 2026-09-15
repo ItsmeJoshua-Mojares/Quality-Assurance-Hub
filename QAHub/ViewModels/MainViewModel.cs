@@ -16,11 +16,11 @@ public class MainViewModel : ObservableObject
         TestCases = new TestCasesViewModel(_dataService, () => Dashboard.Refresh());
         Bugs = new BugsViewModel(_dataService, () => Dashboard.Refresh());
         SerialTerminal = new SerialTerminalViewModel();
-        TestRuns = new TestRunsViewModel();
-        Requirements = new RequirementsViewModel();
+        TestRuns = new TestRunsViewModel(_dataService);
+        Requirements = new RequirementsViewModel(_dataService);
         Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
-        KnowledgeBase = new KnowledgeBaseViewModel();
+        KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
         Settings = new SettingsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
         Rmas = new RmaViewModel(_dataService, Projects);
@@ -91,6 +91,7 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowSerialTerminalCommand { get; }
     public RelayCommand ShowSettingsCommand { get; }
     public RelayCommand ShowShipmentsCommand { get; }
+}
     public RelayCommand ShowRmasCommand { get; }
     public RelayCommand ShowCaparsCommand { get; }
 }
