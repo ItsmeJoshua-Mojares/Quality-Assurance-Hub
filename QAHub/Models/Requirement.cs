@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace QAHub.Models;
 
@@ -63,6 +64,7 @@ public class Requirement : INotifyPropertyChanged
         set { _linkedTestCaseNames = value; OnPropertyChanged(); Touch(); }
     }
 
+    [JsonInclude]
     public DateTime UpdatedAt
     {
         get => _updatedAt;

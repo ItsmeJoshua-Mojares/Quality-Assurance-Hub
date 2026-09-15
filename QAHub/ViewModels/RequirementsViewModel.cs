@@ -2,14 +2,18 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using QAHub.Models;
+using QAHub.Services;
 
 namespace QAHub.ViewModels;
 
 public class RequirementsViewModel : ObservableObject
 {
+    private readonly IDataService _dataService;
+
     private Requirement? _selectedRequirement;
     private bool _isEditing;
     private bool _isCreatingNew;
@@ -22,8 +26,13 @@ public class RequirementsViewModel : ObservableObject
     private string _draftLinkedTestCaseNames = string.Empty;
     private string _draftDescription = string.Empty;
 
-    public RequirementsViewModel()
+    public RequirementsViewModel(IDataService dataService)
     {
+        _dataService = dataService;
+
+        foreach (var requirement in dataService.LoadRequirements())
+            Requirements.Add(requirement);
+
         RequirementsView = CollectionViewSource.GetDefaultView(Requirements);
         RequirementsView.Filter = FilterRequirement;
 
@@ -200,6 +209,7 @@ public class RequirementsViewModel : ObservableObject
             SelectedRequirement.Description = DraftDescription.Trim();
         }
 
+        _dataService.SaveRequirements(Requirements);
         RaiseOverviewChanged();
         GoToList();
     }
@@ -215,8 +225,14 @@ public class RequirementsViewModel : ObservableObject
 
     private void DeleteRequirement(Requirement requirement)
     {
+        if (MessageBox.Show(
+                $"Delete requirement \"{requirement.Title}\"? This cannot be undone.",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
         Requirements.Remove(requirement);
         if (SelectedRequirement == requirement) SelectedRequirement = null;
+        _dataService.SaveRequirements(Requirements);
         RaiseOverviewChanged();
         GoToList();
     }
