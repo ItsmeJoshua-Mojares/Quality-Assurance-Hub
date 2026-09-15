@@ -278,7 +278,7 @@
                         <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,0,0,18">
                             <Run Text="{Binding Selected.Source, Mode=OneWay}"/>
                             <Run Text="• Last updated "/>
-                            <Run Text="{Binding Selected.UpdatedAt, Mode=OneWay, StringFormat={}{0:MMM d, yyyy h:mm tt}}"/>
+                            <Run Text="{Binding Selected.UpdatedAt, Mode=OneWay, StringFormat='{}{0:MMM d, yyyy h:mm tt}'}"/>
                         </TextBlock>
 
                         <Grid>

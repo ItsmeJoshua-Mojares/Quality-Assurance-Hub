@@ -147,7 +147,7 @@
 
                         <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,0,0,18">
                             <Run Text="Last updated "/>
-                            <Run Text="{Binding SelectedArticle.UpdatedAt, Mode=OneWay, StringFormat={}{0:MMM d, yyyy h:mm tt}}"/>
+                            <Run Text="{Binding SelectedArticle.UpdatedAt, Mode=OneWay, StringFormat='{}{0:MMM d, yyyy h:mm tt}'}"/>
                         </TextBlock>
 
                         <TextBlock Text="{Binding SelectedArticle.Content}" TextWrapping="Wrap"

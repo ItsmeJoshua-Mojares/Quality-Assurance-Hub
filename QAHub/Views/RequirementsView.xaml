@@ -161,7 +161,7 @@
                             <Run Text="Source: "/>
                             <Run Text="{Binding SelectedRequirement.Source, Mode=OneWay, TargetNullValue='Not set'}"/>
                             <Run Text=" • Last updated "/>
-                            <Run Text="{Binding SelectedRequirement.UpdatedAt, Mode=OneWay, StringFormat={}{0:MMM d, yyyy h:mm tt}}"/>
+                            <Run Text="{Binding SelectedRequirement.UpdatedAt, Mode=OneWay, StringFormat='{}{0:MMM d, yyyy h:mm tt}'}"/>
                         </TextBlock>
 
                         <TextBlock Text="{Binding SelectedRequirement.Description}" TextWrapping="Wrap"
