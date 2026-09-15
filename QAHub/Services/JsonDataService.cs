@@ -138,7 +138,7 @@ public class JsonDataService : IDataService
 
     public void SaveKnowledgeArticles(IEnumerable<KnowledgeArticle> articles)
         => File.WriteAllText(_knowledgeBasePath, JsonSerializer.Serialize(articles, Options));
-}
+
     public List<Rma> LoadRmAs()
     {
         if (!File.Exists(_rmAsPath)) return new List<Rma>();

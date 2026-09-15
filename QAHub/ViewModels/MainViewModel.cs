@@ -91,7 +91,6 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowSerialTerminalCommand { get; }
     public RelayCommand ShowSettingsCommand { get; }
     public RelayCommand ShowShipmentsCommand { get; }
-}
     public RelayCommand ShowRmasCommand { get; }
     public RelayCommand ShowCaparsCommand { get; }
 }

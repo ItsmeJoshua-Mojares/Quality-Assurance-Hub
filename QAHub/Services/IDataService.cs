@@ -23,7 +23,6 @@ public interface IDataService
     void SaveTestRuns(IEnumerable<TestRun> testRuns);
     void SaveRequirements(IEnumerable<Requirement> requirements);
     void SaveKnowledgeArticles(IEnumerable<KnowledgeArticle> articles);
-}
     void SaveRmAs(IEnumerable<Rma> rmAs);
     void SaveCapars(IEnumerable<Capar> capars);
 }

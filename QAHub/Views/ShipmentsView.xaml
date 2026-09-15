@@ -220,6 +220,7 @@
                                         <Run Text="{Binding Location, Mode=OneWay, TargetNullValue='No location'}"/>
                                     </TextBlock>
                                 </StackPanel>
+                                </Button>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                 VerticalAlignment="Center" Margin="16,0,0,0">
