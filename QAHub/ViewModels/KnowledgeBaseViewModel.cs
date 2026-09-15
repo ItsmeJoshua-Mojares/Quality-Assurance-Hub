@@ -2,14 +2,18 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using QAHub.Models;
+using QAHub.Services;
 
 namespace QAHub.ViewModels;
 
 public class KnowledgeBaseViewModel : ObservableObject
 {
+    private readonly IDataService _dataService;
+
     private KnowledgeArticle? _selectedArticle;
     private bool _isEditingArticle;
     private bool _isCreatingNew;
@@ -21,8 +25,13 @@ public class KnowledgeBaseViewModel : ObservableObject
     private string _draftTags = string.Empty;
     private string _draftContent = string.Empty;
 
-    public KnowledgeBaseViewModel()
+    public KnowledgeBaseViewModel(IDataService dataService)
     {
+        _dataService = dataService;
+
+        foreach (var article in dataService.LoadKnowledgeArticles())
+            Articles.Add(article);
+
         ArticlesView = CollectionViewSource.GetDefaultView(Articles);
         ArticlesView.Filter = FilterArticle;
 
@@ -185,6 +194,7 @@ public class KnowledgeBaseViewModel : ObservableObject
             SelectedArticle.Content = DraftContent.Trim();
         }
 
+        _dataService.SaveKnowledgeArticles(Articles);
         OnPropertyChanged(nameof(TotalArticles));
         OnPropertyChanged(nameof(FilteredCount));
         OnPropertyChanged(nameof(HasNoSearchResults));
@@ -204,8 +214,14 @@ public class KnowledgeBaseViewModel : ObservableObject
 
     private void DeleteArticle(KnowledgeArticle article)
     {
+        if (MessageBox.Show(
+                $"Delete article \"{article.Title}\"? This cannot be undone.",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
         Articles.Remove(article);
         if (SelectedArticle == article) SelectedArticle = null;
+        _dataService.SaveKnowledgeArticles(Articles);
         OnPropertyChanged(nameof(TotalArticles));
         OnPropertyChanged(nameof(FilteredCount));
         OnPropertyChanged(nameof(HasNoSearchResults));
