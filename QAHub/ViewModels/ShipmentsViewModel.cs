@@ -64,6 +64,7 @@ public class ShipmentsViewModel : ObservableObject
         BackToProjectsCommand = new RelayCommand(_ => GoToProjects());
         BackToListCommand = new RelayCommand(_ => GoToProjectShipments());
         DeleteShipmentCommand = new RelayCommand(param => { if (param is Shipment s) DeleteShipment(s); });
+        RefreshCommand = new RelayCommand(_ => Refresh());
     }
 
     public ObservableCollection<Shipment> Shipments { get; } = new();
@@ -222,6 +223,7 @@ public class ShipmentsViewModel : ObservableObject
     public ICommand BackToProjectsCommand { get; }
     public ICommand BackToListCommand { get; }
     public ICommand DeleteShipmentCommand { get; }
+    public ICommand RefreshCommand { get; }
 
     private bool FilterShipment(object obj)
     {
@@ -385,6 +387,29 @@ public class ShipmentsViewModel : ObservableObject
         _dataService.SaveShipments(Shipments);
         RaiseOverviewChanged();
         GoToProjectShipments();
+    }
+
+    private void Refresh()
+    {
+        var reloaded = _dataService.LoadShipments();
+        var selectedProjectId = SelectedProject?.Id;
+        var selectedShipmentId = SelectedShipment?.Id;
+
+        Shipments.Clear();
+        foreach (var shipment in reloaded)
+            Shipments.Add(shipment);
+
+        SelectedProject = selectedProjectId != null
+            ? _projects.Projects.FirstOrDefault(p => p.Id == selectedProjectId)
+            : null;
+        SelectedShipment = selectedShipmentId != null
+            ? reloaded.FirstOrDefault(s => s.Id == selectedShipmentId)
+            : null;
+
+        RebuildProjectSummaries();
+        ShipmentsView.Refresh();
+        RaiseOverviewChanged();
+        RaiseViewStateChanged();
     }
 
     private void ClearDraft()

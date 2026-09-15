@@ -110,7 +110,6 @@ public class Shipment : INotifyPropertyChanged
         set { _imei = value; OnPropertyChanged(); Touch(); }
     }
 
-    [JsonInclude]
     public DateTime UpdatedAt
     {
         get => _updatedAt;

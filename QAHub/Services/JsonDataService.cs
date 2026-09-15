@@ -24,6 +24,8 @@ public class JsonDataService : IDataService
     private readonly string _testRunsPath;
     private readonly string _requirementsPath;
     private readonly string _knowledgeBasePath;
+    private readonly string _rmAsPath;
+    private readonly string _caparsPath;
 
     public JsonDataService(string? dataDirectory = null)
     {
@@ -37,6 +39,8 @@ public class JsonDataService : IDataService
         _testRunsPath = Path.Combine(_dataDirectory, "testruns.json");
         _requirementsPath = Path.Combine(_dataDirectory, "requirements.json");
         _knowledgeBasePath = Path.Combine(_dataDirectory, "knowledgebase.json");
+        _rmAsPath = Path.Combine(_dataDirectory, "rma.json");
+        _caparsPath = Path.Combine(_dataDirectory, "capar.json");
     }
 
     /// <summary>
@@ -134,4 +138,26 @@ public class JsonDataService : IDataService
 
     public void SaveKnowledgeArticles(IEnumerable<KnowledgeArticle> articles)
         => File.WriteAllText(_knowledgeBasePath, JsonSerializer.Serialize(articles, Options));
+}
+    public List<Rma> LoadRmAs()
+    {
+        if (!File.Exists(_rmAsPath)) return new List<Rma>();
+
+        return JsonSerializer.Deserialize<List<Rma>>(File.ReadAllText(_rmAsPath), Options)
+            ?? new List<Rma>();
+    }
+
+    public List<Capar> LoadCapars()
+    {
+        if (!File.Exists(_caparsPath)) return new List<Capar>();
+
+        return JsonSerializer.Deserialize<List<Capar>>(File.ReadAllText(_caparsPath), Options)
+            ?? new List<Capar>();
+    }
+
+    public void SaveRmAs(IEnumerable<Rma> rmAs)
+        => File.WriteAllText(_rmAsPath, JsonSerializer.Serialize(rmAs, Options));
+
+    public void SaveCapars(IEnumerable<Capar> capars)
+        => File.WriteAllText(_caparsPath, JsonSerializer.Serialize(capars, Options));
 }

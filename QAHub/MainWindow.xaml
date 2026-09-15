@@ -44,6 +44,10 @@
                                 Command="{Binding ShowSettingsCommand}"/>
                         <Button Content="Shipment Tracker" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowShipmentsCommand}"/>
+                        <Button Content="RMA Tracker" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowRmasCommand}"/>
+                        <Button Content="CAPAR Tracker" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowCaparsCommand}"/>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
