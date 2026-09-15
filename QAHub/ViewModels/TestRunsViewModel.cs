@@ -4,25 +4,33 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using QAHub.Models;
+using QAHub.Services;
 
 namespace QAHub.ViewModels;
 
 public class TestRunsViewModel : ObservableObject
 {
+    private readonly IDataService _dataService;
+
     private TestRun? _selectedRun;
     private string _newRunName = string.Empty;
     private string? _newRunBuildVersion;
     private string _newItemCaseName = string.Empty;
 
-    public TestRunsViewModel()
+    public TestRunsViewModel(IDataService dataService)
     {
+        _dataService = dataService;
+
+        foreach (var run in dataService.LoadTestRuns())
+            Runs.Add(run);
+
         CreateRunCommand = new RelayCommand(_ => CreateRun(), _ => !string.IsNullOrWhiteSpace(NewRunName));
         OpenRunCommand = new RelayCommand(param => { if (param is TestRun run) OpenRun(run); });
         BackToListCommand = new RelayCommand(_ => SelectedRun = null);
         DeleteRunCommand = new RelayCommand(param => { if (param is TestRun run) DeleteRun(run); });
 
         AddItemCommand = new RelayCommand(_ => AddItem(), _ => SelectedRun != null && !string.IsNullOrWhiteSpace(NewItemCaseName));
-        RemoveItemCommand = new RelayCommand(param => { if (param is TestRunItem item) SelectedRun?.Items.Remove(item); });
+        RemoveItemCommand = new RelayCommand(param => { if (param is TestRunItem item) RemoveItem(item); });
 
         MarkPassedCommand = new RelayCommand(param => SetStatus(param, TestRunItemStatus.Passed));
         MarkFailedCommand = new RelayCommand(param => SetStatus(param, TestRunItemStatus.Failed));
@@ -112,6 +120,7 @@ public class TestRunsViewModel : ObservableObject
         Runs.Add(run);
         NewRunName = string.Empty;
         NewRunBuildVersion = null;
+        _dataService.SaveTestRuns(Runs);
         RaiseOverviewChanged();
         OpenRun(run);
     }
@@ -120,8 +129,14 @@ public class TestRunsViewModel : ObservableObject
 
     private void DeleteRun(TestRun run)
     {
+        if (MessageBox.Show(
+                $"Delete test run \"{run.Name}\"? This cannot be undone.",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
         Runs.Remove(run);
         if (SelectedRun == run) SelectedRun = null;
+        _dataService.SaveTestRuns(Runs);
         RaiseOverviewChanged();
     }
 
@@ -137,6 +152,13 @@ public class TestRunsViewModel : ObservableObject
         });
 
         NewItemCaseName = string.Empty;
+        _dataService.SaveTestRuns(Runs);
+    }
+
+    private void RemoveItem(TestRunItem item)
+    {
+        SelectedRun?.Items.Remove(item);
+        _dataService.SaveTestRuns(Runs);
     }
 
     private void SetStatus(object? param, TestRunItemStatus status)
@@ -144,6 +166,7 @@ public class TestRunsViewModel : ObservableObject
         if (param is TestRunItem item)
         {
             item.Status = status;
+            _dataService.SaveTestRuns(Runs);
             RaiseOverviewChanged();
         }
     }
@@ -170,6 +193,7 @@ public class TestRunsViewModel : ObservableObject
         // creation API (via IDataService or BugsViewModel) is settled.
         // For now this just marks the item as linked so the UI reflects intent.
         item.LinkedBugId = -1;
+        _dataService.SaveTestRuns(Runs);
         MessageBox.Show($"Bug reporting for \"{item.CaseName}\" is not wired to the Bugs module yet.",
             "Report Bug", MessageBoxButton.OK, MessageBoxImage.Information);
     }
@@ -180,6 +204,7 @@ public class TestRunsViewModel : ObservableObject
 
         SelectedRun.Status = TestRunStatus.Completed;
         SelectedRun.CompletedAt = DateTime.Now;
+        _dataService.SaveTestRuns(Runs);
         RaiseOverviewChanged();
         CommandManager.InvalidateRequerySuggested();
     }
