@@ -245,4 +245,15 @@ public class KnowledgeBaseViewModel : ObservableObject
         OnPropertyChanged(nameof(SaveButtonLabel));
         CommandManager.InvalidateRequerySuggested();
     }
+
+    /// <summary>Bulk-clears without the per-item confirmation dialog — see TestRunsViewModel.ClearAll for why.</summary>
+    public void ClearAll()
+    {
+        Articles.Clear();
+        SelectedArticle = null;
+        _dataService.SaveKnowledgeArticles(Articles);
+        OnPropertyChanged(nameof(TotalArticles));
+        OnPropertyChanged(nameof(FilteredCount));
+        OnPropertyChanged(nameof(HasNoSearchResults));
+    }
 }

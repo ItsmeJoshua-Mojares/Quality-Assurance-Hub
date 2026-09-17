@@ -29,10 +29,10 @@
                         <Run Text=" — Quality &amp; Testing Center"/>
                     </TextBlock>
                     <TextBlock FontSize="12" Foreground="#6B7280" TextWrapping="Wrap" LineHeight="20">
-                        All data (Test Runs, Requirements, Projects, Knowledge Base) is currently held
-                        in memory for this session only and is not saved between launches. A SQLite-backed
-                        data layer is planned but not yet wired up — once that's in place this page is
-                        where storage location and backup options will live.
+                        All data is stored as plain JSON files in a "data" folder next to QAHub.sln —
+                        no database server required. Each section below has its own file
+                        (testcases.json, bugs.json, testruns.json, and so on), so you can back up or
+                        inspect your data just by copying that folder.
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -43,6 +43,26 @@
                     <TextBlock Text="Data Management" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
                     <TextBlock Text="Clear data for a single section, or everything at once. Each asks for confirmation first."
                                FontSize="12" Foreground="#6B7280" Margin="0,0,0,16"/>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Test Cases" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetTestCasesCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Bugs" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetBugsCommand}"/>
+                    </Grid>
 
                     <Grid Style="{StaticResource ResetRowStyle}">
                         <Grid.ColumnDefinitions>
@@ -79,6 +99,36 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Shipment Tracker" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetShipmentsCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="CAPAR Tracker" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetCaparsCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="RMA Tracker" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetRmasCommand}"/>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Knowledge Base" VerticalAlignment="Center" FontSize="13"/>
                         <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
                                 Command="{Binding ResetKnowledgeBaseCommand}"/>
@@ -93,7 +143,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Reset Everything" FontSize="13" FontWeight="SemiBold"/>
-                            <TextBlock Text="Clears all four sections above in one action." FontSize="11" Foreground="#6B7280"/>
+                            <TextBlock Text="Clears all nine sections above in one action." FontSize="11" Foreground="#6B7280"/>
                         </StackPanel>
                         <Button Grid.Column="1" Content="Reset All Data" Style="{StaticResource DangerButtonStyle}"
                                 Command="{Binding ResetAllCommand}"/>
