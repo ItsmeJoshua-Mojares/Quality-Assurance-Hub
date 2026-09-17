@@ -22,7 +22,7 @@
 
             <!-- About / status -->
             <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,18">
-                <StackPanel>
+                <StackPanel >
                     <TextBlock Text="About" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
                     <TextBlock FontSize="13" Margin="0,0,0,4">
                         <Run Text="QA Hub" FontWeight="SemiBold"/>
@@ -38,8 +38,8 @@
             </Border>
 
             <!-- Data management -->
-            <Border Style="{StaticResource StatCardStyle}">
-                <StackPanel>
+            <Border Style="{StaticResource StatCardStyle}"  Margin="0,0,0,18" >
+                <StackPanel >
                     <TextBlock Text="Data Management" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
                     <TextBlock Text="Clear data for a single section, or everything at once. Each asks for confirmation first."
                                FontSize="12" Foreground="#6B7280" Margin="0,0,0,16"/>

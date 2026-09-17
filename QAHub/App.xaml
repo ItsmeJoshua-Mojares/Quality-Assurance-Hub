@@ -135,11 +135,6 @@
             <Setter Property="CornerRadius" Value="10"/>
             <Setter Property="Padding" Value="18,16"/>
             <Setter Property="Margin" Value="0,0,12,12"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="14" ShadowDepth="1" Opacity="0.08"/>
-                </Setter.Value>
-            </Setter>
         </Style>
 
         <!-- Invisible full-area button used to make whole cards clickable -->
