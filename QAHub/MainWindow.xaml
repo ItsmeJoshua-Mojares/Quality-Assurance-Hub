@@ -38,6 +38,8 @@
                                 Command="{Binding ShowReportsCommand}"/>
                         <Button Content="Knowledge Base" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowKnowledgeBaseCommand}"/>
+                        <Button Content="Standards Library" Style="{StaticResource SidebarButtonStyle}"
+                                Command="{Binding ShowStandardsLibraryCommand}"/>
                         <Expander Header="Tracker" Style="{StaticResource SidebarExpanderStyle}">
                             <StackPanel Margin="16,2,4,2">
                                 <Button Content="Shipment Tracker" Style="{StaticResource SidebarSubMenuButtonStyle}"

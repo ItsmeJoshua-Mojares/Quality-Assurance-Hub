@@ -16,6 +16,7 @@ public interface IDataService
 
     List<Rma> LoadRmAs();
     List<Capar> LoadCapars();
+    List<StandardDocument> LoadStandardDocuments();
     void SaveTestCases(IEnumerable<TestCase> testCases);
     void SaveBugs(IEnumerable<Bug> bugs);
     void SaveProjects(IEnumerable<Project> projects);
@@ -25,4 +26,14 @@ public interface IDataService
     void SaveKnowledgeArticles(IEnumerable<KnowledgeArticle> articles);
     void SaveRmAs(IEnumerable<Rma> rmAs);
     void SaveCapars(IEnumerable<Capar> capars);
+    void SaveStandardDocuments(IEnumerable<StandardDocument> documents);
+
+    /// <summary>Copies the source file into the storage folder and returns the stored metadata.</summary>
+    StandardDocument StoreDocumentFile(string sourcePath, string fileTitle, string description, StandardCategory category);
+
+    /// <summary>Returns the absolute path of a stored document, or null if the file is missing.</summary>
+    string? GetDocumentPath(StandardDocument document);
+
+    /// <summary>Deletes the stored binary file, if present.</summary>
+    void DeleteDocumentFile(StandardDocument document);
 }

@@ -21,6 +21,7 @@ public class MainViewModel : ObservableObject
         Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
         KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
+        StandardsLibrary = new StandardsLibraryViewModel(_dataService);
         Settings = new SettingsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
         Rmas = new RmaViewModel(_dataService, Projects);
@@ -34,6 +35,7 @@ public class MainViewModel : ObservableObject
         ShowProjectsCommand = new RelayCommand(_ => CurrentViewModel = Projects);
         ShowReportsCommand = new RelayCommand(_ => CurrentViewModel = Reports);
         ShowKnowledgeBaseCommand = new RelayCommand(_ => CurrentViewModel = KnowledgeBase);
+        ShowStandardsLibraryCommand = new RelayCommand(_ => CurrentViewModel = StandardsLibrary);
         ShowSerialTerminalCommand = new RelayCommand(_ => CurrentViewModel = SerialTerminal);
         ShowSettingsCommand = new RelayCommand(_ => CurrentViewModel = Settings);
         ShowShipmentsCommand = new RelayCommand(_ => CurrentViewModel = Shipments);
@@ -62,6 +64,7 @@ public class MainViewModel : ObservableObject
     public ProjectsViewModel Projects { get; }
     public ReportsViewModel Reports { get; }
     public KnowledgeBaseViewModel KnowledgeBase { get; }
+    public StandardsLibraryViewModel StandardsLibrary { get; }
     public SettingsViewModel Settings { get; }
     public ShipmentsViewModel Shipments { get; }
     public RmaViewModel Rmas { get; }
@@ -88,6 +91,7 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowProjectsCommand { get; }
     public RelayCommand ShowReportsCommand { get; }
     public RelayCommand ShowKnowledgeBaseCommand { get; }
+    public RelayCommand ShowStandardsLibraryCommand { get; }
     public RelayCommand ShowSerialTerminalCommand { get; }
     public RelayCommand ShowSettingsCommand { get; }
     public RelayCommand ShowShipmentsCommand { get; }
