@@ -265,4 +265,13 @@ public class RequirementsViewModel : ObservableObject
         OnPropertyChanged(nameof(FilteredCount));
         OnPropertyChanged(nameof(HasNoSearchResults));
     }
+
+    /// <summary>Bulk-clears without the per-item confirmation dialog — see TestRunsViewModel.ClearAll for why.</summary>
+    public void ClearAll()
+    {
+        Requirements.Clear();
+        SelectedRequirement = null;
+        _dataService.SaveRequirements(Requirements);
+        RaiseOverviewChanged();
+    }
 }

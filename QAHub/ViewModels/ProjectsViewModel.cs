@@ -260,4 +260,13 @@ public class ProjectsViewModel : ObservableObject
         OnPropertyChanged(nameof(FilteredCount));
         OnPropertyChanged(nameof(HasNoSearchResults));
     }
+
+    /// <summary>Bulk-clears without the per-item confirmation dialog — see TestRunsViewModel.ClearAll for why.</summary>
+    public void ClearAll()
+    {
+        Projects.Clear();
+        SelectedProject = null;
+        _dataService.SaveProjects(Projects);
+        RaiseOverviewChanged();
+    }
 }

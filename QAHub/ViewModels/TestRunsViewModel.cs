@@ -216,4 +216,18 @@ public class TestRunsViewModel : ObservableObject
         OnPropertyChanged(nameof(CompletedRuns));
         OnPropertyChanged(nameof(OverallPassRateLabel));
     }
+
+    /// <summary>
+    /// Removes every run without the per-item confirmation dialog. Intended for
+    /// bulk resets (e.g. from Settings) where the caller has already obtained
+    /// one overarching confirmation — looping DeleteRunCommand instead would
+    /// pop a "Delete test run X?" dialog for every single run.
+    /// </summary>
+    public void ClearAll()
+    {
+        Runs.Clear();
+        SelectedRun = null;
+        _dataService.SaveTestRuns(Runs);
+        RaiseOverviewChanged();
+    }
 }
