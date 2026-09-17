@@ -38,18 +38,22 @@
                                 Command="{Binding ShowReportsCommand}"/>
                         <Button Content="Knowledge Base" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowKnowledgeBaseCommand}"/>
-                        <Button Content="Shipment Tracker" Style="{StaticResource SidebarButtonStyle}"
-                                Command="{Binding ShowShipmentsCommand}"/>
-                        <Button Content="RMA Tracker" Style="{StaticResource SidebarButtonStyle}"
-                                Command="{Binding ShowRmasCommand}"/>
-                        <Button Content="CAPAR Tracker" Style="{StaticResource SidebarButtonStyle}"
-                                Command="{Binding ShowCaparsCommand}"/>
+                        <Expander Header="Tracker" Style="{StaticResource SidebarExpanderStyle}">
+                            <StackPanel Margin="16,2,4,2">
+                                <Button Content="Shipment Tracker" Style="{StaticResource SidebarSubMenuButtonStyle}"
+                                        Command="{Binding ShowShipmentsCommand}"/>
+                                <Button Content="RMA Tracker" Style="{StaticResource SidebarSubMenuButtonStyle}"
+                                        Command="{Binding ShowRmasCommand}"/>
+                                <Button Content="CAPAR Tracker" Style="{StaticResource SidebarSubMenuButtonStyle}"
+                                        Command="{Binding ShowCaparsCommand}"/>
+
+                            </StackPanel>
+                        </Expander>
+
                         <Button Content="Serial Terminal" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowSerialTerminalCommand}"/>
                         <Button Content="Settings" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowSettingsCommand}"/>
-
-
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
