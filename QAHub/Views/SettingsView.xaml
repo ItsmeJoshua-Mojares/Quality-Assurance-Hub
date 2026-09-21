@@ -11,6 +11,12 @@
         <Style x:Key="ResetRowStyle" TargetType="Grid">
             <Setter Property="Margin" Value="0,0,0,14"/>
         </Style>
+
+        <Style x:Key="TableHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#9CA3AF"/>
+        </Style>
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="26">
@@ -22,24 +28,128 @@
 
             <!-- About / status -->
             <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,18">
-                <StackPanel >
+                <StackPanel>
                     <TextBlock Text="About" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
                     <TextBlock FontSize="13" Margin="0,0,0,4">
                         <Run Text="QA Hub" FontWeight="SemiBold"/>
                         <Run Text=" — Quality &amp; Testing Center"/>
                     </TextBlock>
-                    <TextBlock FontSize="12" Foreground="#6B7280" TextWrapping="Wrap" LineHeight="20">
+                    <TextBlock FontSize="12" Foreground="#6B7280" TextWrapping="Wrap" LineHeight="20" Margin="0,0,0,14">
                         All data is stored as plain JSON files in a "data" folder next to QAHub.sln —
-                        no database server required. Each section below has its own file
-                        (testcases.json, bugs.json, testruns.json, and so on), so you can back up or
-                        inspect your data just by copying that folder.
+                        no database server required. Each section has its own file, so you can back
+                        up or inspect your data just by copying that folder.
                     </TextBlock>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding DataDirectoryPath}" FontSize="12"
+                                   FontFamily="Consolas" Foreground="#374151" VerticalAlignment="Center"
+                                   TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
+                        <Button Grid.Column="1" Content="Open Data Folder" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding OpenDataFolderCommand}" Margin="10,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Storage stats -->
+            <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,18">
+                <StackPanel>
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Storage" FontSize="15" FontWeight="SemiBold"/>
+                        <Button Grid.Column="1" Content="&#8635; Refresh" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding RefreshStorageStatsCommand}"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="SECTION" Style="{StaticResource TableHeaderStyle}"/>
+                        <TextBlock Grid.Column="1" Text="RECORDS" Style="{StaticResource TableHeaderStyle}" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="2" Text="FILE SIZE" Style="{StaticResource TableHeaderStyle}" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding StorageRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="90"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Section}" FontSize="13"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding RecordCount}" FontSize="13" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding FileSizeLabel}" FontSize="13"
+                                               Foreground="#6B7280" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Separator Margin="0,6,0,10" Background="#E5E7EB"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="90"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Total" FontSize="13" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TotalRecordCount}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="2" Text="{Binding TotalFileSizeLabel}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Backup / Restore -->
+            <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="Backup &amp; Restore" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="Export everything to a single zip file, or restore from a previous export."
+                               FontSize="12" Foreground="#6B7280" Margin="0,0,0,16"/>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Export Data" FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock Text="Save all data as a timestamped .zip file." FontSize="11" Foreground="#6B7280"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Export..." Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding ExportDataCommand}"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Import Data" FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock Text="Restore from a .zip export. Overwrites current data; requires a restart."
+                                       FontSize="11" Foreground="#6B7280" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Import..." Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ImportDataCommand}"/>
+                    </Grid>
                 </StackPanel>
             </Border>
 
             <!-- Data management -->
-            <Border Style="{StaticResource StatCardStyle}"  Margin="0,0,0,18" >
-                <StackPanel >
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
                     <TextBlock Text="Data Management" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
                     <TextBlock Text="Clear data for a single section, or everything at once. Each asks for confirmation first."
                                FontSize="12" Foreground="#6B7280" Margin="0,0,0,16"/>

@@ -21,10 +21,10 @@ public class MainViewModel : ObservableObject
         Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
         KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
-        Settings = new SettingsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
         Rmas = new RmaViewModel(_dataService, Projects);
         Capars = new CaparViewModel(_dataService, Projects);
+        Settings = new SettingsViewModel(this, _dataService);
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
         ShowTestCasesCommand = new RelayCommand(_ => CurrentViewModel = TestCases);
@@ -76,6 +76,7 @@ public class MainViewModel : ObservableObject
             {
                 Dashboard.Refresh();
                 if (value == Reports) Reports.Refresh();
+                if (value == Settings) Settings.RefreshStorageStats();
             }
         }
     }

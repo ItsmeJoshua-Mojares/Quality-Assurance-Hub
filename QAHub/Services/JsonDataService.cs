@@ -16,6 +16,8 @@ public class JsonDataService : IDataService
         Converters = { new JsonStringEnumConverter() }
     };
 
+    public string DataDirectory => _dataDirectory;
+
     private readonly string _dataDirectory;
     private readonly string _testCasesPath;
     private readonly string _bugsPath;

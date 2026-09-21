@@ -6,6 +6,8 @@ namespace QAHub.Services;
 
 public interface IDataService
 {
+    string DataDirectory { get; }
+
     List<TestCase> LoadTestCases();
     List<Bug> LoadBugs();
     List<Project> LoadProjects();
