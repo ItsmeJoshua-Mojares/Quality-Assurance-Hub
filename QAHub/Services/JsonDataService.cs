@@ -28,6 +28,8 @@ public class JsonDataService : IDataService
     private readonly string _knowledgeBasePath;
     private readonly string _rmAsPath;
     private readonly string _caparsPath;
+    private readonly string _standardDocumentsPath;
+    private readonly string _documentsDirectory;
 
     public JsonDataService(string? dataDirectory = null)
     {
@@ -43,6 +45,10 @@ public class JsonDataService : IDataService
         _knowledgeBasePath = Path.Combine(_dataDirectory, "knowledgebase.json");
         _rmAsPath = Path.Combine(_dataDirectory, "rma.json");
         _caparsPath = Path.Combine(_dataDirectory, "capar.json");
+        _standardDocumentsPath = Path.Combine(_dataDirectory, "documents.json");
+
+        _documentsDirectory = Path.Combine(_dataDirectory, "documents");
+        Directory.CreateDirectory(_documentsDirectory);
     }
 
     /// <summary>
@@ -162,4 +168,93 @@ public class JsonDataService : IDataService
 
     public void SaveCapars(IEnumerable<Capar> capars)
         => File.WriteAllText(_caparsPath, JsonSerializer.Serialize(capars, Options));
+
+    public List<StandardDocument> LoadStandardDocuments()
+    {
+        if (!File.Exists(_standardDocumentsPath)) return new List<StandardDocument>();
+
+        return JsonSerializer.Deserialize<List<StandardDocument>>(File.ReadAllText(_standardDocumentsPath), Options)
+            ?? new List<StandardDocument>();
+    }
+
+    public void SaveStandardDocuments(IEnumerable<StandardDocument> documents)
+        => File.WriteAllText(_standardDocumentsPath, JsonSerializer.Serialize(documents, Options));
+
+    public StandardDocument StoreDocumentFile(string sourcePath, string fileTitle, string description, StandardCategory category)
+    {
+        var originalFileName = Path.GetFileName(sourcePath);
+        var extension = Path.GetExtension(sourcePath).TrimStart('.').ToLowerInvariant();
+        var storedName = BuildUniqueStoredName(originalFileName);
+        var storedPath = Path.Combine(_documentsDirectory, storedName);
+        File.Copy(sourcePath, storedPath);
+
+        return new StandardDocument
+        {
+            Id = 0,
+            Title = fileTitle,
+            Description = description,
+            Category = category,
+            FileName = originalFileName,
+            StoredName = storedName,
+            Extension = extension,
+            SizeBytes = new FileInfo(storedPath).Length,
+            UploadedAt = DateTime.Now
+        };
+    }
+
+    /// <summary>
+    /// Derives the on-disk name from the original file name so the stored document
+    /// keeps the user's chosen name. Sanitizes characters that are invalid in
+    /// Windows paths and appends "(n)" before the extension when a name collision
+    /// exists, so nothing is ever overwritten.
+    /// </summary>
+    private string BuildUniqueStoredName(string originalFileName)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var sanitized = new string(originalFileName
+            .Select(c => invalid.Contains(c) ? '_' : c)
+            .ToArray())
+            .TrimEnd('.', ' ')
+            .Trim();
+
+        if (string.IsNullOrWhiteSpace(sanitized))
+            sanitized = "document";
+
+        // Guard against absurdly long names leaking past the Windows path limit.
+        if (sanitized.Length > 180)
+        {
+            var name = Path.GetFileNameWithoutExtension(sanitized);
+            var ext = Path.GetExtension(sanitized);
+            var truncated = name.Length > 160 ? name.Substring(0, 160) : name;
+            sanitized = truncated + ext;
+        }
+
+        var candidate = sanitized;
+        var counter = 1;
+        while (File.Exists(Path.Combine(_documentsDirectory, candidate)))
+        {
+            var name = Path.GetFileNameWithoutExtension(sanitized);
+            var ext = Path.GetExtension(sanitized);
+            candidate = $"{name} ({counter}){ext}";
+            counter++;
+        }
+
+        return candidate;
+    }
+
+    public string? GetDocumentPath(StandardDocument document)
+    {
+        if (string.IsNullOrWhiteSpace(document.StoredName)) return null;
+
+        var path = Path.Combine(_documentsDirectory, document.StoredName);
+        return File.Exists(path) ? path : null;
+    }
+
+    public void DeleteDocumentFile(StandardDocument document)
+    {
+        if (string.IsNullOrWhiteSpace(document.StoredName)) return;
+
+        var path = Path.Combine(_documentsDirectory, document.StoredName);
+        if (File.Exists(path)) File.Delete(path);
+    }
 }

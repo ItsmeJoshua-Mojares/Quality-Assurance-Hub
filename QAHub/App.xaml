@@ -8,6 +8,8 @@
         <views:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
         <views:ArchiveLabelConverter x:Key="ArchiveLabelConverter"/>
         <views:PercentToWidthConverter x:Key="PercentToWidthConverter"/>
+        <views:StandardCategoryLabelConverter x:Key="StandardCategoryLabelConverter"/>
+        <views:StandardCategoryBrushConverter x:Key="StandardCategoryBrushConverter"/>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
         </DataTemplate>
@@ -31,6 +33,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:KnowledgeBaseViewModel}">
             <views:KnowledgeBaseView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:StandardsLibraryViewModel}">
+            <views:StandardsLibraryView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SerialTerminalViewModel}">
             <views:SerialTerminalView/>
@@ -75,15 +80,78 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#263242"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#33415B"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#2E3C4F"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#2B3A52"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="SidebarExpanderStyle" TargetType="Expander">
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="Foreground" Value="{StaticResource SidebarTextBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <StackPanel>
+                            <ToggleButton IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          Content="{TemplateBinding Header}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          Focusable="False">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="HeaderBorder" Background="Transparent" CornerRadius="6"
+                                                Padding="16,10" Cursor="Hand">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ContentPresenter Grid.Column="0" ContentSource="Content"
+                                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                                  TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                                <TextBlock Grid.Column="1" x:Name="Chevron" Text="&#x25BE;" FontSize="10"
+                                                           Margin="8,0,0,0" VerticalAlignment="Center"
+                                                           TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="HeaderBorder" Property="Background" Value="#33415B"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Chevron" Property="Text" Value="&#x25B4;"/>
+                                        </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite" Visibility="Collapsed" Margin="0,4,0,2"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SidebarSubMenuButtonStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,1,0,1"/>
         </Style>
 
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
