@@ -22,7 +22,6 @@ public class MainViewModel : ObservableObject
         Reports = new ReportsViewModel(this);
         KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
         StandardsLibrary = new StandardsLibraryViewModel(_dataService);
-        Settings = new SettingsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
         Rmas = new RmaViewModel(_dataService, Projects);
         Capars = new CaparViewModel(_dataService, Projects);
