@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -23,6 +24,7 @@ public class Requirement : INotifyPropertyChanged
     private string? _source;
     private RequirementCoverageStatus _coverageStatus = RequirementCoverageStatus.Untested;
     private string? _linkedTestCaseNames;
+    private List<int> _linkedTestCaseIds = new();
     private DateTime _updatedAt = DateTime.Now;
 
     public int Id { get; set; }
@@ -54,14 +56,22 @@ public class Requirement : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Comma-separated names of test cases covering this requirement.
-    /// Temporary stand-in until Requirements links against real TestCase
-    /// records via TestCaseId — replace once that API is settled.
+    /// Legacy free-text field from before real Test Case linking existed.
+    /// Kept (rather than removed) so existing requirements.json data isn't
+    /// lost on load — no longer written to by the UI, but still readable.
     /// </summary>
+    [Obsolete("Superseded by LinkedTestCaseIds. Kept only for backward compatibility with older saved data.")]
     public string? LinkedTestCaseNames
     {
         get => _linkedTestCaseNames;
         set { _linkedTestCaseNames = value; OnPropertyChanged(); Touch(); }
+    }
+
+    /// <summary>Real link to TestCase.Id — the actual test cases covering this requirement.</summary>
+    public List<int> LinkedTestCaseIds
+    {
+        get => _linkedTestCaseIds;
+        set { _linkedTestCaseIds = value ?? new List<int>(); OnPropertyChanged(); Touch(); }
     }
 
     [JsonInclude]

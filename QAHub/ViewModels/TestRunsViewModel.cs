@@ -15,11 +15,12 @@ public class TestRunsViewModel : ObservableObject
     private TestRun? _selectedRun;
     private string _newRunName = string.Empty;
     private string? _newRunBuildVersion;
-    private string _newItemCaseName = string.Empty;
+    private TestCase? _selectedTestCaseToAdd;
 
-    public TestRunsViewModel(IDataService dataService)
+    public TestRunsViewModel(IDataService dataService, ObservableCollection<TestCase> availableTestCases)
     {
         _dataService = dataService;
+        AvailableTestCases = availableTestCases;
 
         foreach (var run in dataService.LoadTestRuns())
             Runs.Add(run);
@@ -29,7 +30,7 @@ public class TestRunsViewModel : ObservableObject
         BackToListCommand = new RelayCommand(_ => SelectedRun = null);
         DeleteRunCommand = new RelayCommand(param => { if (param is TestRun run) DeleteRun(run); });
 
-        AddItemCommand = new RelayCommand(_ => AddItem(), _ => SelectedRun != null && !string.IsNullOrWhiteSpace(NewItemCaseName));
+        AddItemCommand = new RelayCommand(_ => AddItem(), _ => SelectedRun != null && SelectedTestCaseToAdd != null);
         RemoveItemCommand = new RelayCommand(param => { if (param is TestRunItem item) RemoveItem(item); });
 
         MarkPassedCommand = new RelayCommand(param => SetStatus(param, TestRunItemStatus.Passed));
@@ -42,6 +43,9 @@ public class TestRunsViewModel : ObservableObject
     }
 
     public ObservableCollection<TestRun> Runs { get; } = new();
+
+    /// <summary>The real Test Cases list, shared with TestCasesViewModel, used to populate the "Add Test Case to Run" picker.</summary>
+    public ObservableCollection<TestCase> AvailableTestCases { get; }
 
     public TestRun? SelectedRun
     {
@@ -72,10 +76,11 @@ public class TestRunsViewModel : ObservableObject
         set => SetProperty(ref _newRunBuildVersion, value);
     }
 
-    public string NewItemCaseName
+    /// <summary>The Test Case currently selected in the "Add Test Case to Run" picker.</summary>
+    public TestCase? SelectedTestCaseToAdd
     {
-        get => _newItemCaseName;
-        set { SetProperty(ref _newItemCaseName, value); CommandManager.InvalidateRequerySuggested(); }
+        get => _selectedTestCaseToAdd;
+        set { SetProperty(ref _selectedTestCaseToAdd, value); CommandManager.InvalidateRequerySuggested(); }
     }
 
     // ---- Overview stat cards (across all runs) ----
@@ -142,16 +147,26 @@ public class TestRunsViewModel : ObservableObject
 
     private void AddItem()
     {
-        if (SelectedRun == null) return;
+        if (SelectedRun == null || SelectedTestCaseToAdd == null) return;
+
+        if (SelectedRun.Items.Any(i => i.TestCaseId == SelectedTestCaseToAdd.Id))
+        {
+            MessageBox.Show($"\"{SelectedTestCaseToAdd.Title}\" is already in this run.",
+                "Already Added", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
 
         SelectedRun.Items.Add(new TestRunItem
         {
             Id = SelectedRun.Items.Count == 0 ? 1 : SelectedRun.Items.Max(i => i.Id) + 1,
             TestRunId = SelectedRun.Id,
-            CaseName = NewItemCaseName.Trim()
+            TestCaseId = SelectedTestCaseToAdd.Id,
+            // Snapshot of the title at the time it was added — keeps this run's
+            // history readable even if the test case is later renamed or deleted.
+            CaseName = SelectedTestCaseToAdd.Title
         });
 
-        NewItemCaseName = string.Empty;
+        SelectedTestCaseToAdd = null;
         _dataService.SaveTestRuns(Runs);
     }
 

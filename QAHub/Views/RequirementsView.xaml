@@ -102,8 +102,12 @@
                                         <TextBlock FontSize="12" Foreground="#6B7280" Margin="0,3,0,0"
                                                    Text="{Binding Description}"
                                                    TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,4,0,0"
-                                                   Text="{Binding Source, TargetNullValue='No source set'}"/>
+                                        <TextBlock FontSize="11" Foreground="#9CA3AF" Margin="0,4,0,0">
+                                            <Run Text="{Binding Source, TargetNullValue='No source set', Mode=OneWay}"/>
+                                            <Run Text=" • "/>
+                                            <Run Text="{Binding LinkedTestCaseIds.Count, Mode=OneWay}"/>
+                                            <Run Text=" test case(s) linked"/>
+                                        </TextBlock>
                                     </StackPanel>
 
                                     <Button Grid.Column="1" Content="Update" Style="{StaticResource SecondaryButtonStyle}"
@@ -168,7 +172,7 @@
                                    FontSize="14" LineHeight="22" Margin="0,0,0,18"/>
 
                         <TextBlock Text="Covered by" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBlock Text="{Binding SelectedRequirement.LinkedTestCaseNames, TargetNullValue='No test cases linked yet'}"
+                        <TextBlock Text="{Binding LinkedTestCaseNamesDisplay}"
                                    TextWrapping="Wrap" FontSize="13" Margin="0,0,0,20"/>
 
                         <StackPanel Orientation="Horizontal">
@@ -218,10 +222,32 @@
                                  VerticalScrollBarVisibility="Auto" Margin="0,0,0,14"
                                  Text="{Binding DraftDescription, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBlock Text="Covered By (comma-separated test case names)" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox Padding="8,6" Margin="0,0,0,18"
-                                 ToolTip="Temporary: type case names directly until this links to the real Test Cases list"
-                                 Text="{Binding DraftLinkedTestCaseNames, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="Covered By" Style="{StaticResource FieldLabelStyle}"/>
+                        <Border BorderBrush="#D1D5DB" BorderThickness="1" CornerRadius="4" Margin="0,0,0,18">
+                            <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding DraftLinkedTestCases}" Margin="10,8">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Title}" IsChecked="{Binding IsSelected}"
+                                                      Margin="0,4" FontSize="13"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                        <TextBlock Text="No test cases yet — create some on the Test Cases page first."
+                                   FontSize="11" Foreground="#9CA3AF" Margin="0,-12,0,18">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DraftLinkedTestCases.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
                         <StackPanel Orientation="Horizontal">
                             <Button Content="{Binding SaveButtonLabel}" Style="{StaticResource PrimaryButtonStyle}"
