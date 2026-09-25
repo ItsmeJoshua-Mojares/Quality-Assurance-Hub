@@ -16,8 +16,8 @@ public class MainViewModel : ObservableObject
         TestCases = new TestCasesViewModel(_dataService, () => Dashboard.Refresh());
         Bugs = new BugsViewModel(_dataService, () => Dashboard.Refresh());
         SerialTerminal = new SerialTerminalViewModel();
-        TestRuns = new TestRunsViewModel(_dataService);
-        Requirements = new RequirementsViewModel(_dataService);
+        TestRuns = new TestRunsViewModel(_dataService, TestCases.Items);
+        Requirements = new RequirementsViewModel(_dataService, TestCases.Items);
         Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
         Shipments = new ShipmentsViewModel(_dataService, Projects);

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -181,6 +182,11 @@ public class TestCasesViewModel : ObservableObject
     {
         if (Selected is null) return;
 
+        if (MessageBox.Show(
+                $"Delete test case \"{Selected.Title}\"? This cannot be undone.",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
         Items.Remove(Selected);
         Selected = null;
         Save();
@@ -191,4 +197,11 @@ public class TestCasesViewModel : ObservableObject
 
     private static void CommandManagerInvalidate()
         => Dispatcher.CurrentDispatcher.Invoke(() => CommandManager.InvalidateRequerySuggested());
+
+    public void ClearAll()
+    {
+        Items.Clear();
+        Selected = null;
+        Save();
+    }
 }

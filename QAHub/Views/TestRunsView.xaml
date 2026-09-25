@@ -196,23 +196,36 @@
                     </Border>
                 </UniformGrid>
 
-                <!-- Add test case (placeholder until wired to real TestCases list) -->
+                <!-- Add test case (real picker over the actual Test Cases list) -->
                 <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,18">
                     <StackPanel>
-                        <TextBlock Text="Add Test Case to Run" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                        <TextBlock Text="Temporary: type a case name directly. This should later pick from your real Test Cases list."
-                                   FontSize="11" Foreground="#9CA3AF" Margin="0,0,0,10"/>
+                        <TextBlock Text="Add Test Case to Run" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="10"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Padding="8,6"
-                                     Text="{Binding NewItemCaseName, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Column="0" Padding="8,6"
+                                      ItemsSource="{Binding AvailableTestCases}"
+                                      SelectedItem="{Binding SelectedTestCaseToAdd}"
+                                      DisplayMemberPath="Title"/>
                             <Button Grid.Column="2" Content="Add" Style="{StaticResource PrimaryButtonStyle}"
                                     Command="{Binding AddItemCommand}"/>
                         </Grid>
+                        <TextBlock Text="No test cases yet — create some on the Test Cases page first."
+                                   FontSize="11" Foreground="#9CA3AF" Margin="0,8,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AvailableTestCases.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                 </Border>
 

@@ -10,9 +10,31 @@ using QAHub.Services;
 
 namespace QAHub.ViewModels;
 
+/// <summary>A Test Case wrapped with a checkbox state, used by the "Covered By" multi-select in the Requirement form.</summary>
+public class SelectableTestCase : ObservableObject
+{
+    private bool _isSelected;
+
+    public SelectableTestCase(TestCase testCase, bool isSelected)
+    {
+        TestCase = testCase;
+        _isSelected = isSelected;
+    }
+
+    public TestCase TestCase { get; }
+    public string Title => TestCase.Title;
+
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetProperty(ref _isSelected, value);
+    }
+}
+
 public class RequirementsViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
+    private readonly ObservableCollection<TestCase> _availableTestCases;
 
     private Requirement? _selectedRequirement;
     private bool _isEditing;
@@ -23,12 +45,12 @@ public class RequirementsViewModel : ObservableObject
     private string _draftTitle = string.Empty;
     private string _draftSource = string.Empty;
     private RequirementCoverageStatus _draftCoverageStatus = RequirementCoverageStatus.Untested;
-    private string _draftLinkedTestCaseNames = string.Empty;
     private string _draftDescription = string.Empty;
 
-    public RequirementsViewModel(IDataService dataService)
+    public RequirementsViewModel(IDataService dataService, ObservableCollection<TestCase> availableTestCases)
     {
         _dataService = dataService;
+        _availableTestCases = availableTestCases;
 
         foreach (var requirement in dataService.LoadRequirements())
             Requirements.Add(requirement);
@@ -71,7 +93,13 @@ public class RequirementsViewModel : ObservableObject
     public Requirement? SelectedRequirement
     {
         get => _selectedRequirement;
-        private set => SetProperty(ref _selectedRequirement, value);
+        private set
+        {
+            if (SetProperty(ref _selectedRequirement, value))
+            {
+                OnPropertyChanged(nameof(LinkedTestCaseNamesDisplay));
+            }
+        }
     }
 
     private bool IsEditing
@@ -98,6 +126,22 @@ public class RequirementsViewModel : ObservableObject
     public string FormTitle => IsCreatingNew ? "New Requirement" : "Editing Requirement";
     public string SaveButtonLabel => IsCreatingNew ? "Create Requirement" : "Save Changes";
 
+    /// <summary>Resolved test case titles for the currently open (read-only) requirement, for display.</summary>
+    public string LinkedTestCaseNamesDisplay
+    {
+        get
+        {
+            if (SelectedRequirement == null || SelectedRequirement.LinkedTestCaseIds.Count == 0)
+                return "No test cases linked yet";
+
+            var names = SelectedRequirement.LinkedTestCaseIds
+                .Select(id => _availableTestCases.FirstOrDefault(tc => tc.Id == id)?.Title)
+                .Where(title => title != null);
+
+            return string.Join(", ", names);
+        }
+    }
+
     // ---- Draft form fields ----
     public string DraftTitle
     {
@@ -117,17 +161,14 @@ public class RequirementsViewModel : ObservableObject
         set => SetProperty(ref _draftCoverageStatus, value);
     }
 
-    public string DraftLinkedTestCaseNames
-    {
-        get => _draftLinkedTestCaseNames;
-        set => SetProperty(ref _draftLinkedTestCaseNames, value);
-    }
-
     public string DraftDescription
     {
         get => _draftDescription;
         set => SetProperty(ref _draftDescription, value);
     }
+
+    /// <summary>Every available test case with a checkbox state, rebuilt each time the form opens.</summary>
+    public ObservableCollection<SelectableTestCase> DraftLinkedTestCases { get; } = new();
 
     public int TotalRequirements => Requirements.Count;
     public int FullyTestedCount => Requirements.Count(r => r.CoverageStatus == RequirementCoverageStatus.FullyTested);
@@ -158,6 +199,7 @@ public class RequirementsViewModel : ObservableObject
     private void ShowCreateForm()
     {
         ClearDraft();
+        RebuildDraftLinkedTestCases(selectedIds: null);
         SelectedRequirement = null;
         IsEditing = false;
         IsCreatingNew = true;
@@ -178,15 +220,28 @@ public class RequirementsViewModel : ObservableObject
         DraftTitle = requirement.Title;
         DraftSource = requirement.Source ?? string.Empty;
         DraftCoverageStatus = requirement.CoverageStatus;
-        DraftLinkedTestCaseNames = requirement.LinkedTestCaseNames ?? string.Empty;
         DraftDescription = requirement.Description;
+        RebuildDraftLinkedTestCases(requirement.LinkedTestCaseIds);
         IsEditing = true;
         IsCreatingNew = false;
         RaiseViewStateChanged();
     }
 
+    /// <summary>Rebuilds the checkbox list against the current AvailableTestCases, checking off any ids already linked.</summary>
+    private void RebuildDraftLinkedTestCases(System.Collections.Generic.List<int>? selectedIds)
+    {
+        DraftLinkedTestCases.Clear();
+        foreach (var testCase in _availableTestCases)
+        {
+            var isSelected = selectedIds?.Contains(testCase.Id) ?? false;
+            DraftLinkedTestCases.Add(new SelectableTestCase(testCase, isSelected));
+        }
+    }
+
     private void SaveForm()
     {
+        var linkedIds = DraftLinkedTestCases.Where(x => x.IsSelected).Select(x => x.TestCase.Id).ToList();
+
         if (IsCreatingNew)
         {
             var requirement = new Requirement
@@ -195,7 +250,7 @@ public class RequirementsViewModel : ObservableObject
                 Title = DraftTitle.Trim(),
                 Source = string.IsNullOrWhiteSpace(DraftSource) ? null : DraftSource.Trim(),
                 CoverageStatus = DraftCoverageStatus,
-                LinkedTestCaseNames = string.IsNullOrWhiteSpace(DraftLinkedTestCaseNames) ? null : DraftLinkedTestCaseNames.Trim(),
+                LinkedTestCaseIds = linkedIds,
                 Description = DraftDescription.Trim()
             };
             Requirements.Add(requirement);
@@ -205,7 +260,7 @@ public class RequirementsViewModel : ObservableObject
             SelectedRequirement.Title = DraftTitle.Trim();
             SelectedRequirement.Source = string.IsNullOrWhiteSpace(DraftSource) ? null : DraftSource.Trim();
             SelectedRequirement.CoverageStatus = DraftCoverageStatus;
-            SelectedRequirement.LinkedTestCaseNames = string.IsNullOrWhiteSpace(DraftLinkedTestCaseNames) ? null : DraftLinkedTestCaseNames.Trim();
+            SelectedRequirement.LinkedTestCaseIds = linkedIds;
             SelectedRequirement.Description = DraftDescription.Trim();
         }
 
@@ -242,7 +297,6 @@ public class RequirementsViewModel : ObservableObject
         DraftTitle = string.Empty;
         DraftSource = string.Empty;
         DraftCoverageStatus = RequirementCoverageStatus.Untested;
-        DraftLinkedTestCaseNames = string.Empty;
         DraftDescription = string.Empty;
     }
 
