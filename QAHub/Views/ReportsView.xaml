@@ -18,7 +18,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Reports" FontSize="26" FontWeight="Bold"/>
+                    <TextBlock Text="Overview" FontSize="26" FontWeight="Bold"/>
                     <TextBlock Text="Pass rate trends and requirement coverage, drawn from Test Runs and Requirements"
                                Foreground="#6B7280" Margin="0,3,0,0"/>
                 </StackPanel>

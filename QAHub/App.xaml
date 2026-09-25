@@ -31,6 +31,9 @@
         <DataTemplate DataType="{x:Type vm:ReportsViewModel}">
             <views:ReportsView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CaparReportViewModel}">
+            <views:CaparReportView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:KnowledgeBaseViewModel}">
             <views:KnowledgeBaseView/>
         </DataTemplate>

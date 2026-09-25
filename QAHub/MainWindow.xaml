@@ -34,8 +34,14 @@
                                 Command="{Binding ShowRequirementsCommand}"/>
                         <Button Content="Projects" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowProjectsCommand}"/>
-                        <Button Content="Reports" Style="{StaticResource SidebarButtonStyle}"
-                                Command="{Binding ShowReportsCommand}"/>
+                        <Expander Header="Reports" Style="{StaticResource SidebarExpanderStyle}">
+                            <StackPanel Margin="16,2,4,2">
+                                <Button Content="Overview" Style="{StaticResource SidebarSubMenuButtonStyle}"
+                                        Command="{Binding ShowReportsCommand}"/>
+                                <Button Content="CAPAR Register" Style="{StaticResource SidebarSubMenuButtonStyle}"
+                                        Command="{Binding ShowCaparReportCommand}"/>
+                            </StackPanel>
+                        </Expander>
                         <Button Content="Knowledge Base" Style="{StaticResource SidebarButtonStyle}"
                                 Command="{Binding ShowKnowledgeBaseCommand}"/>
                         <Button Content="Standards Library" Style="{StaticResource SidebarButtonStyle}"

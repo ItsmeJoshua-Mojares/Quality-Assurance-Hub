@@ -20,11 +20,12 @@ public class MainViewModel : ObservableObject
         Requirements = new RequirementsViewModel(_dataService);
         Projects = new ProjectsViewModel(_dataService);
         Reports = new ReportsViewModel(this);
-        KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
-        StandardsLibrary = new StandardsLibraryViewModel(_dataService);
         Shipments = new ShipmentsViewModel(_dataService, Projects);
         Rmas = new RmaViewModel(_dataService, Projects);
         Capars = new CaparViewModel(_dataService, Projects);
+        CaparReport = new CaparReportViewModel(this);
+        KnowledgeBase = new KnowledgeBaseViewModel(_dataService);
+        StandardsLibrary = new StandardsLibraryViewModel(_dataService);
         Settings = new SettingsViewModel(this, _dataService);
 
         ShowDashboardCommand = new RelayCommand(_ => CurrentViewModel = Dashboard);
@@ -34,6 +35,7 @@ public class MainViewModel : ObservableObject
         ShowRequirementsCommand = new RelayCommand(_ => CurrentViewModel = Requirements);
         ShowProjectsCommand = new RelayCommand(_ => CurrentViewModel = Projects);
         ShowReportsCommand = new RelayCommand(_ => CurrentViewModel = Reports);
+        ShowCaparReportCommand = new RelayCommand(_ => CurrentViewModel = CaparReport);
         ShowKnowledgeBaseCommand = new RelayCommand(_ => CurrentViewModel = KnowledgeBase);
         ShowStandardsLibraryCommand = new RelayCommand(_ => CurrentViewModel = StandardsLibrary);
         ShowSerialTerminalCommand = new RelayCommand(_ => CurrentViewModel = SerialTerminal);
@@ -63,6 +65,7 @@ public class MainViewModel : ObservableObject
     public RequirementsViewModel Requirements { get; }
     public ProjectsViewModel Projects { get; }
     public ReportsViewModel Reports { get; }
+    public CaparReportViewModel CaparReport { get; }
     public KnowledgeBaseViewModel KnowledgeBase { get; }
     public StandardsLibraryViewModel StandardsLibrary { get; }
     public SettingsViewModel Settings { get; }
@@ -79,6 +82,7 @@ public class MainViewModel : ObservableObject
             {
                 Dashboard.Refresh();
                 if (value == Reports) Reports.Refresh();
+                if (value == CaparReport) CaparReport.Refresh();
                 if (value == Settings) Settings.RefreshStorageStats();
             }
         }
@@ -91,6 +95,7 @@ public class MainViewModel : ObservableObject
     public RelayCommand ShowRequirementsCommand { get; }
     public RelayCommand ShowProjectsCommand { get; }
     public RelayCommand ShowReportsCommand { get; }
+    public RelayCommand ShowCaparReportCommand { get; }
     public RelayCommand ShowKnowledgeBaseCommand { get; }
     public RelayCommand ShowStandardsLibraryCommand { get; }
     public RelayCommand ShowSerialTerminalCommand { get; }
