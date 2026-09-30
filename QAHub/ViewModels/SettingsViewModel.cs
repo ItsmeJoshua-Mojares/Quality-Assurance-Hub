@@ -266,25 +266,8 @@ public class SettingsViewModel : ObservableObject
         RefreshStorageStats();
     }
 
-    private void DeleteAllTestCases()
-    {
-        var items = _mainViewModel.TestCases.Items;
-        while (items.Count > 0)
-        {
-            _mainViewModel.TestCases.Selected = items[0];
-            _mainViewModel.TestCases.DeleteCommand.Execute(null);
-        }
-    }
-
-    private void DeleteAllBugs()
-    {
-        var items = _mainViewModel.Bugs.Items;
-        while (items.Count > 0)
-        {
-            _mainViewModel.Bugs.Selected = items[0];
-            _mainViewModel.Bugs.DeleteCommand.Execute(null);
-        }
-    }
+    private void DeleteAllTestCases() => _mainViewModel.TestCases.ClearAll();
+    private void DeleteAllBugs() => _mainViewModel.Bugs.ClearAll();
 
     private void DeleteAllTestRuns() => _mainViewModel.TestRuns.ClearAll();
     private void DeleteAllRequirements() => _mainViewModel.Requirements.ClearAll();
