@@ -244,6 +244,16 @@
                                 Command="{Binding ResetKnowledgeBaseCommand}"/>
                     </Grid>
 
+                    <Grid Style="{StaticResource ResetRowStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Standards Library" VerticalAlignment="Center" FontSize="13"/>
+                        <Button Grid.Column="1" Content="Reset" Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding ResetStandardsLibraryCommand}"/>
+                    </Grid>
+
                     <Separator Margin="0,4,0,16" Background="#E5E7EB"/>
 
                     <Grid>
@@ -253,7 +263,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Reset Everything" FontSize="13" FontWeight="SemiBold"/>
-                            <TextBlock Text="Clears all nine sections above in one action." FontSize="11" Foreground="#6B7280"/>
+                            <TextBlock Text="Clears all ten sections above in one action." FontSize="11" Foreground="#6B7280"/>
                         </StackPanel>
                         <Button Grid.Column="1" Content="Reset All Data" Style="{StaticResource DangerButtonStyle}"
                                 Command="{Binding ResetAllCommand}"/>

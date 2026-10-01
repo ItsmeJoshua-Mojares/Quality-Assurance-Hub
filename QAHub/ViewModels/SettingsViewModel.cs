@@ -42,6 +42,7 @@ public class SettingsViewModel : ObservableObject
         ResetCaparsCommand = new RelayCommand(_ => ResetCapars());
         ResetRmasCommand = new RelayCommand(_ => ResetRmas());
         ResetKnowledgeBaseCommand = new RelayCommand(_ => ResetKnowledgeBase());
+        ResetStandardsLibraryCommand = new RelayCommand(_ => ResetStandardsLibrary());
         ResetAllCommand = new RelayCommand(_ => ResetAll());
 
         OpenDataFolderCommand = new RelayCommand(_ => OpenDataFolder());
@@ -65,6 +66,7 @@ public class SettingsViewModel : ObservableObject
     public ICommand ResetCaparsCommand { get; }
     public ICommand ResetRmasCommand { get; }
     public ICommand ResetKnowledgeBaseCommand { get; }
+    public ICommand ResetStandardsLibraryCommand { get; }
     public ICommand ResetAllCommand { get; }
 
     public ICommand OpenDataFolderCommand { get; }
@@ -91,6 +93,7 @@ public class SettingsViewModel : ObservableObject
         AddStorageRow("CAPAR Tracker", _mainViewModel.Capars.Items.Count, "capar.json");
         AddStorageRow("RMA Tracker", _mainViewModel.Rmas.Items.Count, "rma.json");
         AddStorageRow("Knowledge Base", _mainViewModel.KnowledgeBase.Articles.Count, "knowledgebase.json");
+        AddStandardsLibraryStorageRow();
 
         TotalRecordCount = StorageRows.Sum(r => r.RecordCount);
         TotalFileSizeLabel = FormatBytes(StorageRows.Sum(r => r.FileSizeBytes));
@@ -105,6 +108,31 @@ public class SettingsViewModel : ObservableObject
         {
             Section = label,
             RecordCount = recordCount,
+            FileSizeBytes = sizeBytes,
+            FileSizeLabel = FormatBytes(sizeBytes)
+        });
+    }
+
+    /// <summary>
+    /// Standards Library stores real attached files in a "documents" subfolder
+    /// alongside documents.json's metadata — measuring only the JSON file
+    /// would drastically understate its actual disk usage, so this sums both.
+    /// </summary>
+    private void AddStandardsLibraryStorageRow()
+    {
+        var metadataPath = Path.Combine(_dataService.DataDirectory, "documents.json");
+        long sizeBytes = File.Exists(metadataPath) ? new FileInfo(metadataPath).Length : 0L;
+
+        var documentsDir = Path.Combine(_dataService.DataDirectory, "documents");
+        if (Directory.Exists(documentsDir))
+        {
+            sizeBytes += new DirectoryInfo(documentsDir).GetFiles().Sum(f => f.Length);
+        }
+
+        StorageRows.Add(new StorageRow
+        {
+            Section = "Standards Library",
+            RecordCount = _mainViewModel.StandardsLibrary.Documents.Count,
             FileSizeBytes = sizeBytes,
             FileSizeLabel = FormatBytes(sizeBytes)
         });
@@ -247,11 +275,19 @@ public class SettingsViewModel : ObservableObject
         RefreshStorageStats();
     }
 
+    private void ResetStandardsLibrary()
+    {
+        if (!Confirm("Delete all registered standards documents, including their stored files? This cannot be undone.")) return;
+        _mainViewModel.StandardsLibrary.ClearAll();
+        RefreshStorageStats();
+    }
+
     private void ResetAll()
     {
         if (!Confirm(
             "Delete ALL data across every section — Test Cases, Bugs, Test Runs, Requirements, " +
-            "Projects, Shipments, CAPARs, RMAs, and Knowledge Base? This cannot be undone."))
+            "Projects, Shipments, CAPARs, RMAs, Knowledge Base, and the Standards Library " +
+            "(including its stored files)? This cannot be undone."))
             return;
 
         DeleteAllTestCases();
@@ -263,6 +299,7 @@ public class SettingsViewModel : ObservableObject
         DeleteAllCapars();
         DeleteAllRmas();
         DeleteAllKnowledgeArticles();
+        _mainViewModel.StandardsLibrary.ClearAll();
         RefreshStorageStats();
     }
 
