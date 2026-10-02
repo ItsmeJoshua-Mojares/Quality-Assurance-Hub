@@ -48,7 +48,7 @@
                        Foreground="#6B7280" Margin="0,3,0,22"/>
 
             <!-- Stat cards -->
-            <UniformGrid Columns="5" Margin="0,0,-12,18">
+            <UniformGrid Columns="6" Margin="0,0,-12,18">
                 <Border Style="{StaticResource StatCardStyle}">
                     <StackPanel>
                         <TextBlock Text="{Binding TotalTestCases}" FontSize="30" FontWeight="Bold"/>
@@ -82,7 +82,60 @@
                         <TextBlock Text="OVERALL PASS RATE" FontSize="11" Foreground="#6B7280" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
+                <Border Style="{StaticResource StatCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding OverdueCaparsCount}" FontSize="30" FontWeight="Bold"
+                                   Foreground="{StaticResource DangerBrush}"/>
+                        <TextBlock Text="OVERDUE CAPARS" FontSize="11" Foreground="#6B7280" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
             </UniformGrid>
+
+            <!-- Overdue CAPAR alert banner — only shown when something is actually overdue -->
+            <Border Margin="0,0,0,18" Padding="18,14" CornerRadius="8"
+                    Background="#FEF2F2" BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
+                    Visibility="{Binding HasOverdueCapars, Converter={StaticResource BoolToVisConverter}}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource DangerBrush}">
+                            <Run Text="&#9888; "/>
+                            <Run Text="{Binding OverdueCaparsCount, Mode=OneWay}"/>
+                            <Run Text=" CAPAR(s) overdue"/>
+                            <Run Text=" — " Foreground="#6B7280" FontWeight="Normal"/>
+                            <Run Text="{Binding DueSoonCaparsCount, Mode=OneWay}" Foreground="#6B7280" FontWeight="Normal"/>
+                            <Run Text=" more due within 7 days" Foreground="#6B7280" FontWeight="Normal"/>
+                        </TextBlock>
+                        <Button Grid.Column="1" Content="View CAPARs &#8594;" Style="{StaticResource LinkButtonStyle}"
+                                Foreground="{StaticResource DangerBrush}"
+                                Command="{Binding ViewCaparsCommand}"/>
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding OverdueCapars}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding CaparNumber}" FontSize="12"
+                                               FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="12" Foreground="#374151"/>
+                                    <TextBlock Grid.Column="2" FontSize="11" Foreground="{StaticResource DangerBrush}">
+                                        <Run Text="{Binding DaysOverdue, Mode=OneWay}"/>
+                                        <Run Text=" day(s) overdue"/>
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
 
             <!-- Trend chart / Defect severity (placeholder) / Quick actions -->
             <Grid Margin="0,0,0,18">

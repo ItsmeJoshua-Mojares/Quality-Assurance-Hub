@@ -347,4 +347,20 @@ public class StandardsLibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(FileHintText));
         CommandManager.InvalidateRequerySuggested();
     }
+
+    public void ClearAll()
+    {
+        foreach (var document in Documents.ToList())
+        {
+            _dataService.DeleteDocumentFile(document);
+        }
+
+        Documents.Clear();
+        PreviewDocument = null;
+        PreviewDocumentPath = null;
+        _dataService.SaveStandardDocuments(Documents);
+        OnPropertyChanged(nameof(TotalDocuments));
+        OnPropertyChanged(nameof(FilteredCount));
+        OnPropertyChanged(nameof(HasNoSearchResults));
+    }
 }

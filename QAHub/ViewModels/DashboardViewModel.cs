@@ -33,6 +33,15 @@ public class RecentDefectRow
     public DateTime OpenedDate { get; set; }
 }
 
+/// <summary>A row in the Dashboard's overdue-CAPAR alert list.</summary>
+public class OverdueCaparRow
+{
+    public string CaparNumber { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public DateTime DueDate { get; set; }
+    public int DaysOverdue { get; set; }
+}
+
 /// <summary>One wedge of the homemade Defect Severity donut chart, with its geometry pre-computed.</summary>
 public class SeverityDonutSlice
 {
@@ -61,6 +70,7 @@ public class DashboardViewModel : ObservableObject
         StartTestRunCommand = new RelayCommand(_ => _owner.ShowTestRunsCommand.Execute(null));
         ViewAllRunsCommand = new RelayCommand(_ => _owner.ShowTestRunsCommand.Execute(null));
         ViewAllDefectsCommand = new RelayCommand(_ => _owner.ShowBugsCommand.Execute(null));
+        ViewCaparsCommand = new RelayCommand(_ => _owner.ShowCaparsCommand.Execute(null));
     }
 
     public int TotalTestCases { get; private set; }
@@ -81,6 +91,12 @@ public class DashboardViewModel : ObservableObject
     public ObservableCollection<RecentRunRow> RecentRuns { get; } = new();
     public ObservableCollection<RecentDefectRow> RecentDefects { get; } = new();
 
+    // ---- CAPAR due-date awareness (real data, built from Capar.DueDate on non-Closed CAPARs) ----
+    public int OverdueCaparsCount { get; private set; }
+    public int DueSoonCaparsCount { get; private set; }
+    public bool HasOverdueCapars => OverdueCaparsCount > 0;
+    public ObservableCollection<OverdueCaparRow> OverdueCapars { get; } = new();
+
     // ---- Defect Severity donut (real data, built from Bug.Severity across open defects) ----
     public ObservableCollection<SeverityDonutSlice> DefectSeveritySlices { get; } = new();
     public int SeverityChartTotal { get; private set; }
@@ -99,6 +115,7 @@ public class DashboardViewModel : ObservableObject
     public ICommand StartTestRunCommand { get; }
     public ICommand ViewAllRunsCommand { get; }
     public ICommand ViewAllDefectsCommand { get; }
+    public ICommand ViewCaparsCommand { get; }
 
     public void Refresh()
     {
@@ -147,6 +164,7 @@ public class DashboardViewModel : ObservableObject
 
         BuildExecutionTrend(runs);
         BuildDefectSeverityChart(bugs);
+        BuildCaparDueDateAwareness(_owner.Capars.Items);
 
         OnPropertyChanged(nameof(TotalTestCases));
         OnPropertyChanged(nameof(PassedCases));
@@ -164,6 +182,36 @@ public class DashboardViewModel : ObservableObject
         OnPropertyChanged(nameof(HasTrendData));
         OnPropertyChanged(nameof(SeverityChartTotal));
         OnPropertyChanged(nameof(HasDefectsForSeverityChart));
+        OnPropertyChanged(nameof(OverdueCaparsCount));
+        OnPropertyChanged(nameof(DueSoonCaparsCount));
+        OnPropertyChanged(nameof(HasOverdueCapars));
+    }
+
+    /// <summary>
+    /// Flags CAPARs whose DueDate has passed (or is within the next 7 days),
+    /// excluding anything already Closed. Capar.DueDate is optional, so CAPARs
+    /// without one are simply not counted either way.
+    /// </summary>
+    private void BuildCaparDueDateAwareness(IEnumerable<Capar> capars)
+    {
+        var active = capars.Where(c => c.Status != CaparStatus.Closed && c.DueDate.HasValue).ToList();
+        var today = DateTime.Today;
+
+        var overdue = active.Where(c => c.DueDate!.Value.Date < today).ToList();
+        OverdueCaparsCount = overdue.Count;
+        DueSoonCaparsCount = active.Count(c => c.DueDate!.Value.Date >= today && c.DueDate.Value.Date <= today.AddDays(7));
+
+        OverdueCapars.Clear();
+        foreach (var capar in overdue.OrderBy(c => c.DueDate).Take(5))
+        {
+            OverdueCapars.Add(new OverdueCaparRow
+            {
+                CaparNumber = capar.CaparNumber,
+                Title = capar.Title,
+                DueDate = capar.DueDate!.Value,
+                DaysOverdue = (today - capar.DueDate.Value.Date).Days
+            });
+        }
     }
 
     /// <summary>
